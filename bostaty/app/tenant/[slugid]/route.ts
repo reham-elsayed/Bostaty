@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server"
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: Promise<{ slug: string }> }
+    { params }: { params: Promise<{ slugid: string }> }
 ) {
     try {
         const supabase = await createClient()
@@ -14,11 +14,14 @@ export async function GET(
         if (!user) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
-        const slug = (await params).slug
-        // Get tenant by slug and verify user is a member
+        const slugid = (await params).slugid
+        // Get tenant by slug OR ID and verify user is a member
         const tenant = await prisma.tenant.findFirst({
             where: {
-                slug: slug,
+                OR: [
+
+                    { id: slugid }
+                ],
                 members: {
                     some: { userId: user.id }
                 }

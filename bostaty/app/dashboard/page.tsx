@@ -19,18 +19,22 @@ import {
     PlusCircle,
     Globe
 } from "lucide-react"
-import { cookies } from "next/headers"
+import { cookies, headers } from "next/headers"
 
 // Dynamic route segment - tells Next.js this page depends on the tenantSlug
 
-interface DashboardPageProps {
-    params: {
-        tenantSlug: string
-    }
-}
+export default async function TenantDashboardPage() {
+    const headersList = await headers()
+    const tenantIdHeader = headersList.get("x-tenant-id")
+    const tenantSlugHeader = headersList.get("x-tenant-slug")
+    console.log(tenantIdHeader)
 
-export default async function TenantDashboardPage({ params }: { params: Promise<DashboardPageProps['params']> }) {
-    const { tenantSlug } = await params
+    // Choose identifier (favoring ID)
+    const tenantIdentifier = tenantIdHeader || tenantSlugHeader
+
+    if (!tenantIdentifier) {
+        redirect("/tenants")
+    }
     const cookieStore = await cookies();
 
     // 2. Convert to string
@@ -47,7 +51,7 @@ export default async function TenantDashboardPage({ params }: { params: Promise<
 
     // 2. Get tenant details and verify membership
     const tenantResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_APP_URL}/tenant/${tenantSlug}`,
+        `${process.env.NEXT_PUBLIC_APP_URL}/tenant/${tenantIdentifier}`,
         {
             headers: {
                 Cookie: cookieString

@@ -1,8 +1,46 @@
 import { updateSession } from "@/lib/supabase/proxy";
-import { type NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import jwt from "jsonwebtoken";
 
 export async function proxy(request: NextRequest) {
-  return await updateSession(request);
+  // 1️⃣ Let Supabase do its work first
+  const response = await updateSession(request);
+
+  // 2️⃣ Read your custom app token
+  const appToken = request.cookies.get("app_access_token")?.value;
+  if (!appToken) return response;
+
+  try {
+    // 3️⃣ Verify & decode
+    const decoded = jwt.verify(
+      appToken,
+      process.env.JWT_SIGNING_SECRET!
+    ) as {
+      tenant_id?: string;
+      sub?: string;
+      token_version?: number;
+    };
+
+    // 4️⃣ Inject headers for downstream consumers
+    if (decoded?.tenant_id) {
+      response.headers.set("x-tenant-id", decoded.tenant_id);
+    }
+
+    if (decoded?.sub) {
+      response.headers.set("x-user-id", decoded.sub);
+    }
+
+    if (decoded?.token_version !== undefined) {
+      response.headers.set(
+        "x-token-version",
+        String(decoded.token_version)
+      );
+    }
+  } catch {
+    // Invalid or expired token → ignore silently
+  }
+
+  return response;
 }
 
 export const config = {

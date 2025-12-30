@@ -56,14 +56,30 @@ export function LoginForm() {
 
   const onSubmit = async (data: LoginDTO) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data: authData, error } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
       });
 
       if (error) throw error;
 
-      router.push("/tenants");
+      if (authData.session) {
+        const response = await fetch("/token", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            supabase_access_token: authData.session.access_token,
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to get application token");
+        }
+      }
+      router.push("/dashboard");
       router.refresh();
     } catch (error: any) {
       form.setError("root", {

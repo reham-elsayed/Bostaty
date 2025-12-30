@@ -17,7 +17,7 @@ export async function GET(request: Request) {
         if (result.type === 'PERSONAL_FLOW') {
             redirect('/onboarding/setup-name'); // Gmail users choose a name
         } else {
-            redirect(`/${result.tenant.slug}/dashboard`); // Agency users go to their dashboard
+            redirect(`/dashboard`); // Agency users go to their dashboard
         }
     }
 }

@@ -16,6 +16,7 @@ interface Tenant {
     id: string
     name: string
     slug: string
+    subdomain: string
     members: { role: string }[]
 }
 
@@ -50,10 +51,25 @@ export function TenantSwitcher() {
     const switchTenant = (tenant: Tenant) => {
         setCurrentTenant(tenant)
         localStorage.setItem("currentTenantId", tenant.id)
-        // For subdomain approach:
-        // window.location.href = `https://${tenant.subdomain}.yourapp.com/dashboard`
-        // For path approach:
-        router.push(`/${tenant.slug}/dashboard`)
+
+        // Set cookies for middleware to read
+        document.cookie = `x-tenant-id=${tenant.id}; path=/; max-age=31536000; SameSite=Lax`;
+        document.cookie = `x-tenant-slug=${tenant.slug}; path=/; max-age=31536000; SameSite=Lax`;
+
+        // For subdomains, we need to redirect to the full URL
+        const hostname = window.location.hostname;
+        const port = window.location.port;
+        const protocol = window.location.protocol;
+
+        // If we are on localhost/IP, we might want to just stay on /dashboard and use cookies
+        if (hostname === "localhost" || hostname === "127.0.0.1" || hostname.startsWith("192.168.")) {
+            window.location.href = "/dashboard";
+            return;
+        }
+
+        // Otherwise, use subdomain-based redirection
+        const newUrl = `${protocol}//${tenant.subdomain}.${hostname.replace(/^(.*?)\./, '')}${port ? `:${port}` : ''}/dashboard`;
+        window.location.href = newUrl;
     }
 
     if (isLoading) return <Button variant="ghost" disabled>Loading...</Button>

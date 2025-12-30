@@ -49,7 +49,7 @@ export function CreateTenantForm() {
 
             const tenant = await response.json()
             // Redirect to the new tenant's dashboard
-            router.push(`/${tenant.slug}/dashboard`)
+            router.push(`/dashboard`)
         } catch (err: any) {
             setError(err.message)
         } finally {

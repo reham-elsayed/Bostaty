@@ -26,7 +26,7 @@ async function OnboardingLogic() {
 
   // If it's a business email, the tenant was created/found
   // result.tenant is now guaranteed to exist here
-  redirect(`/${result.tenant.slug}/dashboard`);
+  redirect(`/dashboard`);
 }
 
 export default async function OnboardingPage() {
