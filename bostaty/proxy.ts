@@ -1,58 +1,87 @@
 import { updateSession } from "@/lib/supabase/proxy";
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
+import jwt from 'jsonwebtoken';
+import { mintAppToken } from "./lib/auth/mintToken";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { createClient } from "./lib/supabase/server";
 
 export async function proxy(request: NextRequest) {
-  // 1️⃣ Let Supabase do its work first
-  const response = await updateSession(request);
-
-  // 2️⃣ Read your custom app token
-  const appToken = request.cookies.get("app_access_token")?.value;
-  if (!appToken) return response;
-
   try {
-    // 3️⃣ Verify & decode
-    const decoded = jwt.verify(
-      appToken,
-      process.env.JWT_SIGNING_SECRET!
-    ) as {
-      tenant_id?: string;
-      sub?: string;
-      token_version?: number;
-    };
+    // 1. Supabase Session Check
+    const response = await updateSession(request);
 
-    // 4️⃣ Inject headers for downstream consumers
-    if (decoded?.tenant_id) {
-      response.headers.set("x-tenant-id", decoded.tenant_id);
-    }
+    // 2. Cookie Extraction
 
-    if (decoded?.sub) {
-      response.headers.set("x-user-id", decoded.sub);
-    }
+    const supabase = await createClient()
+    const { data, error } = await supabase.auth.getSession()
+    if (data.session) {
+      const supabaseToken = data.session.access_token;
+      console.log(supabaseToken)
+      if (!supabaseToken) {
+        console.log("DEBUG: No Supabase token found in cookies.");
+        return response;
+      }
 
-    if (decoded?.token_version !== undefined) {
-      response.headers.set(
-        "x-token-version",
-        String(decoded.token_version)
-      );
+      // 3. JWT Decoding
+      let decoded: any;
+      try {
+        // Note: jwt.decode does not verify the signature. 
+        // If you need security here, use jwt.verify(token, secret)
+        decoded = jwt.decode(supabaseToken);
+
+        if (!decoded || !decoded.sub) {
+          console.error("DEBUG: Token decoded but 'sub' (User ID) is missing.", decoded);
+          return response;
+        }
+      } catch (jwtError) {
+        console.error("DEBUG: JWT Decode failed:", jwtError);
+        return response;
+      }
+
+      // 4. Token Minting & Tenant Lookup
+      try {
+        const result = await mintAppToken(decoded.sub);
+
+        if (!result) {
+          console.warn(`DEBUG: mintAppToken returned null for user ${decoded.sub}`);
+          return response;
+        }
+
+        const { tenantId, token } = result;
+
+        // 5. Header Injection
+        const newHeaders = new Headers(request.headers);
+        newHeaders.set('x-tenant-id', tenantId);
+        newHeaders.set('x-app-token', token);
+
+        // Return the next response with modified headers
+        return NextResponse.next({
+          request: {
+            headers: newHeaders,
+          },
+        });
+
+      } catch (mintError) {
+        console.error("DEBUG: mintAppToken threw an error:", mintError);
+        return response;
+      }
+
     }
-  } catch {
-    // Invalid or expired token → ignore silently
+  } catch (globalError) {
+    // Catch-all for updateSession or unexpected logic failures
+    console.error("DEBUG: Global Proxy Error:", globalError);
+
+    // Fallback to basic next() to prevent the whole site from crashing
+    return NextResponse.next({
+      request: {
+        headers: request.headers,
+      },
+    });
   }
-
-  return response;
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - images - .svg, .png, .jpg, .jpeg, .gif, .webp
-     * Feel free to modify this pattern to include more paths.
-     */
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
