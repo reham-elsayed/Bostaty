@@ -88,7 +88,7 @@ model TenantInvitation {
   inviterId String?    @db.Uuid
   expiresAt DateTime
   createdAt DateTime   @default(now())
-
+  acceptedAt DateTime?
   // Relations
   tenant  Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   inviter User?  @relation(fields: [inviterId], references: [id], onDelete: SetNull)

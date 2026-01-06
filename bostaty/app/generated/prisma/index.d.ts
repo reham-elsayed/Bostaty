@@ -4548,6 +4548,7 @@ export namespace Prisma {
     inviterId: string | null
     expiresAt: Date | null
     createdAt: Date | null
+    acceptedAt: Date | null
   }
 
   export type TenantInvitationMaxAggregateOutputType = {
@@ -4559,6 +4560,7 @@ export namespace Prisma {
     inviterId: string | null
     expiresAt: Date | null
     createdAt: Date | null
+    acceptedAt: Date | null
   }
 
   export type TenantInvitationCountAggregateOutputType = {
@@ -4570,6 +4572,7 @@ export namespace Prisma {
     inviterId: number
     expiresAt: number
     createdAt: number
+    acceptedAt: number
     _all: number
   }
 
@@ -4583,6 +4586,7 @@ export namespace Prisma {
     inviterId?: true
     expiresAt?: true
     createdAt?: true
+    acceptedAt?: true
   }
 
   export type TenantInvitationMaxAggregateInputType = {
@@ -4594,6 +4598,7 @@ export namespace Prisma {
     inviterId?: true
     expiresAt?: true
     createdAt?: true
+    acceptedAt?: true
   }
 
   export type TenantInvitationCountAggregateInputType = {
@@ -4605,6 +4610,7 @@ export namespace Prisma {
     inviterId?: true
     expiresAt?: true
     createdAt?: true
+    acceptedAt?: true
     _all?: true
   }
 
@@ -4689,6 +4695,7 @@ export namespace Prisma {
     inviterId: string | null
     expiresAt: Date
     createdAt: Date
+    acceptedAt: Date | null
     _count: TenantInvitationCountAggregateOutputType | null
     _min: TenantInvitationMinAggregateOutputType | null
     _max: TenantInvitationMaxAggregateOutputType | null
@@ -4717,6 +4724,7 @@ export namespace Prisma {
     inviterId?: boolean
     expiresAt?: boolean
     createdAt?: boolean
+    acceptedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     inviter?: boolean | TenantInvitation$inviterArgs<ExtArgs>
   }, ExtArgs["result"]["tenantInvitation"]>
@@ -4730,6 +4738,7 @@ export namespace Prisma {
     inviterId?: boolean
     expiresAt?: boolean
     createdAt?: boolean
+    acceptedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     inviter?: boolean | TenantInvitation$inviterArgs<ExtArgs>
   }, ExtArgs["result"]["tenantInvitation"]>
@@ -4743,6 +4752,7 @@ export namespace Prisma {
     inviterId?: boolean
     expiresAt?: boolean
     createdAt?: boolean
+    acceptedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     inviter?: boolean | TenantInvitation$inviterArgs<ExtArgs>
   }, ExtArgs["result"]["tenantInvitation"]>
@@ -4756,9 +4766,10 @@ export namespace Prisma {
     inviterId?: boolean
     expiresAt?: boolean
     createdAt?: boolean
+    acceptedAt?: boolean
   }
 
-  export type TenantInvitationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "token" | "role" | "tenantId" | "inviterId" | "expiresAt" | "createdAt", ExtArgs["result"]["tenantInvitation"]>
+  export type TenantInvitationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "token" | "role" | "tenantId" | "inviterId" | "expiresAt" | "createdAt" | "acceptedAt", ExtArgs["result"]["tenantInvitation"]>
   export type TenantInvitationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     inviter?: boolean | TenantInvitation$inviterArgs<ExtArgs>
@@ -4787,6 +4798,7 @@ export namespace Prisma {
       inviterId: string | null
       expiresAt: Date
       createdAt: Date
+      acceptedAt: Date | null
     }, ExtArgs["result"]["tenantInvitation"]>
     composites: {}
   }
@@ -5220,6 +5232,7 @@ export namespace Prisma {
     readonly inviterId: FieldRef<"TenantInvitation", 'String'>
     readonly expiresAt: FieldRef<"TenantInvitation", 'DateTime'>
     readonly createdAt: FieldRef<"TenantInvitation", 'DateTime'>
+    readonly acceptedAt: FieldRef<"TenantInvitation", 'DateTime'>
   }
     
 
@@ -5711,7 +5724,8 @@ export namespace Prisma {
     tenantId: 'tenantId',
     inviterId: 'inviterId',
     expiresAt: 'expiresAt',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    acceptedAt: 'acceptedAt'
   };
 
   export type TenantInvitationScalarFieldEnum = (typeof TenantInvitationScalarFieldEnum)[keyof typeof TenantInvitationScalarFieldEnum]
@@ -6038,6 +6052,7 @@ export namespace Prisma {
     inviterId?: UuidNullableFilter<"TenantInvitation"> | string | null
     expiresAt?: DateTimeFilter<"TenantInvitation"> | Date | string
     createdAt?: DateTimeFilter<"TenantInvitation"> | Date | string
+    acceptedAt?: DateTimeNullableFilter<"TenantInvitation"> | Date | string | null
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
     inviter?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }
@@ -6051,6 +6066,7 @@ export namespace Prisma {
     inviterId?: SortOrderInput | SortOrder
     expiresAt?: SortOrder
     createdAt?: SortOrder
+    acceptedAt?: SortOrderInput | SortOrder
     tenant?: TenantOrderByWithRelationInput
     inviter?: UserOrderByWithRelationInput
   }
@@ -6068,6 +6084,7 @@ export namespace Prisma {
     inviterId?: UuidNullableFilter<"TenantInvitation"> | string | null
     expiresAt?: DateTimeFilter<"TenantInvitation"> | Date | string
     createdAt?: DateTimeFilter<"TenantInvitation"> | Date | string
+    acceptedAt?: DateTimeNullableFilter<"TenantInvitation"> | Date | string | null
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
     inviter?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }, "id" | "token" | "tenantId_email">
@@ -6081,6 +6098,7 @@ export namespace Prisma {
     inviterId?: SortOrderInput | SortOrder
     expiresAt?: SortOrder
     createdAt?: SortOrder
+    acceptedAt?: SortOrderInput | SortOrder
     _count?: TenantInvitationCountOrderByAggregateInput
     _max?: TenantInvitationMaxOrderByAggregateInput
     _min?: TenantInvitationMinOrderByAggregateInput
@@ -6098,6 +6116,7 @@ export namespace Prisma {
     inviterId?: UuidNullableWithAggregatesFilter<"TenantInvitation"> | string | null
     expiresAt?: DateTimeWithAggregatesFilter<"TenantInvitation"> | Date | string
     createdAt?: DateTimeWithAggregatesFilter<"TenantInvitation"> | Date | string
+    acceptedAt?: DateTimeNullableWithAggregatesFilter<"TenantInvitation"> | Date | string | null
   }
 
   export type UserCreateInput = {
@@ -6310,6 +6329,7 @@ export namespace Prisma {
     role?: $Enums.TenantRole
     expiresAt: Date | string
     createdAt?: Date | string
+    acceptedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutInvitationsInput
     inviter?: UserCreateNestedOneWithoutInvitationsInput
   }
@@ -6323,6 +6343,7 @@ export namespace Prisma {
     inviterId?: string | null
     expiresAt: Date | string
     createdAt?: Date | string
+    acceptedAt?: Date | string | null
   }
 
   export type TenantInvitationUpdateInput = {
@@ -6332,6 +6353,7 @@ export namespace Prisma {
     role?: EnumTenantRoleFieldUpdateOperationsInput | $Enums.TenantRole
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutInvitationsNestedInput
     inviter?: UserUpdateOneWithoutInvitationsNestedInput
   }
@@ -6345,6 +6367,7 @@ export namespace Prisma {
     inviterId?: NullableStringFieldUpdateOperationsInput | string | null
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type TenantInvitationCreateManyInput = {
@@ -6356,6 +6379,7 @@ export namespace Prisma {
     inviterId?: string | null
     expiresAt: Date | string
     createdAt?: Date | string
+    acceptedAt?: Date | string | null
   }
 
   export type TenantInvitationUpdateManyMutationInput = {
@@ -6365,6 +6389,7 @@ export namespace Prisma {
     role?: EnumTenantRoleFieldUpdateOperationsInput | $Enums.TenantRole
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type TenantInvitationUncheckedUpdateManyInput = {
@@ -6376,6 +6401,7 @@ export namespace Prisma {
     inviterId?: NullableStringFieldUpdateOperationsInput | string | null
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UuidFilter<$PrismaModel = never> = {
@@ -6693,6 +6719,17 @@ export namespace Prisma {
     not?: NestedUuidNullableFilter<$PrismaModel> | string | null
   }
 
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type UserNullableScalarRelationFilter = {
     is?: UserWhereInput | null
     isNot?: UserWhereInput | null
@@ -6712,6 +6749,7 @@ export namespace Prisma {
     inviterId?: SortOrder
     expiresAt?: SortOrder
     createdAt?: SortOrder
+    acceptedAt?: SortOrder
   }
 
   export type TenantInvitationMaxOrderByAggregateInput = {
@@ -6723,6 +6761,7 @@ export namespace Prisma {
     inviterId?: SortOrder
     expiresAt?: SortOrder
     createdAt?: SortOrder
+    acceptedAt?: SortOrder
   }
 
   export type TenantInvitationMinOrderByAggregateInput = {
@@ -6734,6 +6773,7 @@ export namespace Prisma {
     inviterId?: SortOrder
     expiresAt?: SortOrder
     createdAt?: SortOrder
+    acceptedAt?: SortOrder
   }
 
   export type UuidNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -6749,6 +6789,20 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type TenantMemberCreateNestedManyWithoutUserInput = {
@@ -6975,6 +7029,10 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
   export type TenantUpdateOneRequiredWithoutInvitationsNestedInput = {
     create?: XOR<TenantCreateWithoutInvitationsInput, TenantUncheckedCreateWithoutInvitationsInput>
     connectOrCreate?: TenantCreateOrConnectWithoutInvitationsInput
@@ -7178,6 +7236,17 @@ export namespace Prisma {
     not?: NestedUuidNullableFilter<$PrismaModel> | string | null
   }
 
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type NestedUuidNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -7190,6 +7259,20 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type TenantMemberCreateWithoutUserInput = {
@@ -7223,6 +7306,7 @@ export namespace Prisma {
     role?: $Enums.TenantRole
     expiresAt: Date | string
     createdAt?: Date | string
+    acceptedAt?: Date | string | null
     tenant: TenantCreateNestedOneWithoutInvitationsInput
   }
 
@@ -7234,6 +7318,7 @@ export namespace Prisma {
     tenantId: string
     expiresAt: Date | string
     createdAt?: Date | string
+    acceptedAt?: Date | string | null
   }
 
   export type TenantInvitationCreateOrConnectWithoutInviterInput = {
@@ -7301,6 +7386,7 @@ export namespace Prisma {
     inviterId?: UuidNullableFilter<"TenantInvitation"> | string | null
     expiresAt?: DateTimeFilter<"TenantInvitation"> | Date | string
     createdAt?: DateTimeFilter<"TenantInvitation"> | Date | string
+    acceptedAt?: DateTimeNullableFilter<"TenantInvitation"> | Date | string | null
   }
 
   export type TenantMemberCreateWithoutTenantInput = {
@@ -7334,6 +7420,7 @@ export namespace Prisma {
     role?: $Enums.TenantRole
     expiresAt: Date | string
     createdAt?: Date | string
+    acceptedAt?: Date | string | null
     inviter?: UserCreateNestedOneWithoutInvitationsInput
   }
 
@@ -7345,6 +7432,7 @@ export namespace Prisma {
     inviterId?: string | null
     expiresAt: Date | string
     createdAt?: Date | string
+    acceptedAt?: Date | string | null
   }
 
   export type TenantInvitationCreateOrConnectWithoutTenantInput = {
@@ -7636,6 +7724,7 @@ export namespace Prisma {
     tenantId: string
     expiresAt: Date | string
     createdAt?: Date | string
+    acceptedAt?: Date | string | null
   }
 
   export type TenantMemberUpdateWithoutUserInput = {
@@ -7666,6 +7755,7 @@ export namespace Prisma {
     role?: EnumTenantRoleFieldUpdateOperationsInput | $Enums.TenantRole
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     tenant?: TenantUpdateOneRequiredWithoutInvitationsNestedInput
   }
 
@@ -7677,6 +7767,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type TenantInvitationUncheckedUpdateManyWithoutInviterInput = {
@@ -7687,6 +7778,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type TenantMemberCreateManyTenantInput = {
@@ -7704,6 +7796,7 @@ export namespace Prisma {
     inviterId?: string | null
     expiresAt: Date | string
     createdAt?: Date | string
+    acceptedAt?: Date | string | null
   }
 
   export type TenantMemberUpdateWithoutTenantInput = {
@@ -7734,6 +7827,7 @@ export namespace Prisma {
     role?: EnumTenantRoleFieldUpdateOperationsInput | $Enums.TenantRole
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     inviter?: UserUpdateOneWithoutInvitationsNestedInput
   }
 
@@ -7745,6 +7839,7 @@ export namespace Prisma {
     inviterId?: NullableStringFieldUpdateOperationsInput | string | null
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type TenantInvitationUncheckedUpdateManyWithoutTenantInput = {
@@ -7755,6 +7850,7 @@ export namespace Prisma {
     inviterId?: NullableStringFieldUpdateOperationsInput | string | null
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
 

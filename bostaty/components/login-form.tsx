@@ -76,7 +76,13 @@ export function LoginForm() {
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.error || "Failed to get application token");
+          if (errorData.error === "Tenant not assigned") {
+            router.push("/onboarding");
+          }
+          throw new Error(errorData.error || "Failed to get application token"
+
+          );
+
         }
       }
       router.push("/dashboard");

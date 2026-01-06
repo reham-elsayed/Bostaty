@@ -155,7 +155,8 @@ exports.Prisma.TenantInvitationScalarFieldEnum = {
   tenantId: 'tenantId',
   inviterId: 'inviterId',
   expiresAt: 'expiresAt',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  acceptedAt: 'acceptedAt'
 };
 
 exports.Prisma.SortOrder = {

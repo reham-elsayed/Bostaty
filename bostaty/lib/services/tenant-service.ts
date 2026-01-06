@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma"
 import { TenantRole } from "@prisma/client"
-
+import crypto from "node:crypto"
 export class TenantService {
 
     // List of domains that should NEVER become automatic tenants
@@ -15,7 +15,7 @@ export class TenantService {
         }
 
         // 2. Generate the @slug from the domain
-        const domainName = domain.split('.')[0]; // "tesla.com" -> "tesla"
+        const domainName = domain.split('.')[0];
         const slug = `@${domainName}`;
 
         return await prisma.$transaction(async (tx) => {
@@ -78,7 +78,7 @@ export class TenantService {
                     name: data.name,
                     slug: slug,
                     subdomain: data.subdomain,
-                    settings: { theme: "light" }, // Default settings
+                    settings: { theme: "light" },
                 },
             })
 
@@ -90,22 +90,21 @@ export class TenantService {
                     role: TenantRole.OWNER,
                 },
             })
-
             return tenant
         })
     }
 
     // Get user's tenants
-    static async getUserTenants(userId: string) {
-        return await prisma.tenant.findMany({
+    static async getUserTenant(tenantId: string) {
+        return await prisma.tenant.findFirst({
             where: {
                 members: {
-                    some: { userId },
+                    some: { tenantId },
                 },
             },
             include: {
                 members: {
-                    where: { userId },
+                    where: { tenantId },
                     select: { role: true },
                 },
             },
@@ -131,12 +130,37 @@ export class TenantService {
             throw new Error("You don't have permission to invite members")
         }
 
+        await prisma.tenantInvitation.deleteMany({
+            where: {
+                tenantId,
+                email: data.email,
+                acceptedAt: null,
+                expiresAt: { gt: new Date() },
+            },
+        })
+
+        const existingMember = await prisma.tenantMember.findFirst({
+            where: {
+                tenantId,
+                user: { email: data.email },
+            },
+        })
+
+
+        if (existingMember) {
+            throw new Error("User is already a member of this tenant")
+        }
+
         // Create invitation
-        const token = crypto.randomUUID()
+        const rawToken = crypto.randomBytes(32).toString("hex")
+        const tokenHash = crypto
+            .createHash("sha256")
+            .update(rawToken)
+            .digest("hex")
         return await prisma.tenantInvitation.create({
             data: {
                 email: data.email,
-                token,
+                token: tokenHash,
                 role: data.role,
                 tenantId,
                 expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days

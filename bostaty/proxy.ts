@@ -9,7 +9,10 @@ export async function proxy(request: NextRequest) {
   try {
     // 1. Supabase Session Check
     const response = await updateSession(request);
-
+    // DO NOT OVERRIDE REDIRECTS
+    if (response.headers.get("location")) {
+      return response;
+    }
     // 2. Cookie Extraction
 
     const supabase = await createClient()
@@ -54,19 +57,32 @@ export async function proxy(request: NextRequest) {
         newHeaders.set('x-tenant-id', tenantId);
         newHeaders.set('x-app-token', token);
 
-        // Return the next response with modified headers
-        return NextResponse.next({
+        const finalResponse = NextResponse.next({
           request: {
             headers: newHeaders,
           },
         });
 
+        // ✅ Preserve cookies
+        response.cookies.getAll().forEach((cookie) => {
+          finalResponse.cookies.set(
+            cookie.name,
+            cookie.value,
+            cookie
+          );
+        });
+
+        return finalResponse;
       } catch (mintError) {
         console.error("DEBUG: mintAppToken threw an error:", mintError);
         return response;
       }
 
     }
+
+
+
+
   } catch (globalError) {
     // Catch-all for updateSession or unexpected logic failures
     console.error("DEBUG: Global Proxy Error:", globalError);
