@@ -58,7 +58,7 @@ export default async function AcceptInvitationPage({
                         <p className="text-muted-foreground">You need an account to join this workspace.</p>
                         <div className="flex flex-col gap-3">
                             <Link
-                                href={`/signup?email=${encodeURIComponent(invite.email)}&next=${encodeURIComponent(`/accept-invitation?token=${token}`)}`}
+                                href={`/login?email=${encodeURIComponent(invite.email)}&next=${encodeURIComponent(`/accept-invitation?token=${token}`)}`}
                                 className="w-full py-2.5 px-4 bg-primary text-primary-foreground rounded-lg hover:opacity-90 font-medium transition-all"
                             >
                                 Create Account

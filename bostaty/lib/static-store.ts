@@ -14,7 +14,7 @@ export const auth = {
   signIn: "Sign in",
   signUp: "Sign up",
   signInPath: "/login",
-  signUpPath: "/sign-up",
+  signUpPath: "/login",
 };
 
 export const tutorial = {

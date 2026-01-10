@@ -123,4 +123,47 @@ export class InvitationService {
             }
         })
     }
+
+
+    /**
+  * Find the most recent valid (non-expired, non-accepted) invitation for an email.
+  * Used during auth callback to resume invitation flow.
+  */
+    static async findActiveInvitationByEmail(email: string) {
+        const invitation = await prisma.tenantInvitation.findFirst({
+            where: {
+                email,
+                acceptedAt: null,
+                expiresAt: {
+                    gt: new Date(),
+                },
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+            include: {
+                tenant: {
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                    },
+                },
+                inviter: {
+                    select: {
+                        id: true,
+                        email: true,
+                        name: true,
+                    },
+                },
+            },
+        })
+
+        if (!invitation) {
+            return null
+        }
+
+        return invitation
+    }
+
 }
