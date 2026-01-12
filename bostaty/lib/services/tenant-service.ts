@@ -110,6 +110,15 @@ export class TenantService {
             },
         })
     }
-
+    static async getTenantByUserId(userId: string) {
+        return await prisma.tenantMember.findFirst({
+            where: {
+                userId,
+            },
+            include: {
+                tenant: true,
+            },
+        })
+    }
 
 }

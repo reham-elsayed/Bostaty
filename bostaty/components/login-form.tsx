@@ -6,8 +6,8 @@ import { z } from "zod";
 import { auth } from "@/lib/static-store";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useMemo } from "react";
 import {
   Card,
   CardContent,
@@ -41,21 +41,22 @@ const formFields = [
 
 export function LoginForm({ searchParams }: { searchParams: { next?: string } }) {
 
+  const searchParamsHook = useSearchParams();
   const router = useRouter();
   const supabase = createClient();
   const [isSignUp, setIsSignUp] = useState(false);
-  const next = searchParams?.next
 
-  let inviteToken: string | null = null
+  const next = searchParamsHook.get("next") || searchParams?.next;
 
-  if (next) {
+  const inviteToken = useMemo(() => {
+    if (!next) return null;
     try {
-      const url = new URL(next, 'http://localhost')
-      inviteToken = url.searchParams.get('token')
+      const url = new URL(next, window.location.origin);
+      return url.searchParams.get("token");
     } catch {
-      inviteToken = null
+      return null;
     }
-  }
+  }, [next]);
   const form = useForm<AuthDTO>({
     resolver: zodResolver(authSchema),
     defaultValues: {
@@ -75,7 +76,9 @@ export function LoginForm({ searchParams }: { searchParams: { next?: string } })
           email: data.email,
           password: data.password,
           options: {
-            emailRedirectTo: `${window.location.origin}/callback`
+            emailRedirectTo: inviteToken
+              ? `${window.location.origin}/callback?token=${inviteToken}`
+              : `${window.location.origin}/callback`
           },
         });
 
@@ -99,31 +102,11 @@ export function LoginForm({ searchParams }: { searchParams: { next?: string } })
 
         if (error) throw error;
 
-        // const response = await fetch("/token", {
-        //   method: "POST",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        //   body: JSON.stringify({
-        //     supabase_access_token: authData.session.access_token,
-        //   }),
-        // });
-
-        // if (!response.ok) {
-        //   const errorData = await response.json();
-        //   if (errorData.error === "Tenant not assigned") {
-        //     const onboardingUrl = next ? `/onboarding?next=${encodeURIComponent(next)}` : "/onboarding";
-        //     router.push(onboardingUrl);
-        //     return;
-        //   }
-        //   throw new Error(errorData.error || "Failed to get application token");
-        // }
-
         router.refresh();
         if (next) {
           router.push(next)
         } else {
-          router.push("/dashboard");
+          router.push(`/callback?token=${inviteToken}`);
         }
       }
     }

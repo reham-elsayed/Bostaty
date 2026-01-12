@@ -13,13 +13,15 @@ export async function mintAppToken(userId: string) {
         .select("tenantId")
         .eq("userId", userId)
         .limit(1)
-        .single();
+        .maybeSingle();
 
     if (utError) {
         console.error("tenant_members lookup failed", utError);
         return null;
     }
-
+    if (!ut) {
+        return null
+    }
     const { data: userResp } =
         await supabaseAdmin.auth.admin.getUserById(userId);
 
@@ -31,7 +33,7 @@ export async function mintAppToken(userId: string) {
     const token = jwt.sign(
         {
             sub: userId,
-            tenant_id: ut.tenantId,
+            tenant_id: ut?.tenantId,
             token_version: tokenVersion,
             iat: now,
         },
@@ -40,10 +42,10 @@ export async function mintAppToken(userId: string) {
     );
     console.log({
         token,
-        tenantId: ut.tenantId,
+        tenantId: ut?.tenantId,
     }, "----------------token----------------")
     return {
         token,
-        tenantId: ut.tenantId,
+        tenantId: ut?.tenantId,
     };
 }

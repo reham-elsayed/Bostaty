@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { mintAppToken } from "./lib/auth/mintToken";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "./lib/supabase/server";
+import { InvitationService } from "./lib/services/invitation-services";
 
 export async function proxy(request: NextRequest) {
   try {
@@ -42,11 +43,41 @@ export async function proxy(request: NextRequest) {
       }
 
       // 4. Token Minting & Tenant Lookup
+      // 4. Token Minting & Tenant Lookup
       try {
         const result = await mintAppToken(decoded.sub);
+        const inviteToken = request.nextUrl.searchParams.get("token");
 
         if (!result) {
-          console.warn(`DEBUG: mintAppToken returned null for user ${decoded.sub}`);
+          console.warn(`User ${decoded.sub} has no tenant membership`);
+
+          // 1. If we see a token in the URL, we MUST keep it.
+          // 2. If we DON'T see it in the URL, check if we saved it in a cookie earlier.
+          const activeToken = inviteToken || request.cookies.get("pending_invite_token")?.value;
+
+          if (activeToken && activeToken !== "null") {
+            const url = request.nextUrl.pathname;
+
+            // Redirect to accept-invitation if not already there
+            if (!url.startsWith("/accept-invitation")) {
+              const acceptUrl = new URL("/accept-invitation", request.url);
+              acceptUrl.searchParams.set("token", activeToken);
+
+              const redirectRes = NextResponse.redirect(acceptUrl);
+
+              // STORE THE TOKEN IN A COOKIE so it's never lost again
+              redirectRes.cookies.set("pending_invite_token", activeToken, {
+                maxAge: 3600, // 1 hour
+                path: "/"
+              });
+              return redirectRes;
+            }
+          } else {
+            // No token anywhere? Send to onboarding
+            if (!request.nextUrl.pathname.startsWith("/onboarding")) {
+              return NextResponse.redirect(new URL("/onboarding", request.url));
+            }
+          }
           return response;
         }
 
