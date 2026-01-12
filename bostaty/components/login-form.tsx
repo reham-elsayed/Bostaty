@@ -39,14 +39,16 @@ const formFields = [
   { field: "Password", placeholder: "••••••••", type: "password" },
 ];
 
-export function LoginForm({ searchParams }: { searchParams: { next?: string } }) {
+export function LoginForm() {
+
 
   const searchParamsHook = useSearchParams();
   const router = useRouter();
   const supabase = createClient();
   const [isSignUp, setIsSignUp] = useState(false);
 
-  const next = searchParamsHook.get("next") || searchParams?.next;
+  const next = searchParamsHook.get("next");
+
 
   const inviteToken = useMemo(() => {
     if (!next) return null;
@@ -121,14 +123,13 @@ export function LoginForm({ searchParams }: { searchParams: { next?: string } })
     <Card className="w-full max-w-md mx-auto shadow-lg border-border/40 bg-card/50 backdrop-blur-sm">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl font-bold text-center">
-          {isSignUp ? "Create Account" : auth.signIn}
+          Welcome to Bostaty
         </CardTitle>
         <CardDescription className="text-center">
-          {isSignUp
-            ? "Enter your details to create an account"
-            : "Enter your credentials to access your account"}
+          Sign in to your account or create a new one to continue.
         </CardDescription>
       </CardHeader>
+
       <CardContent>
         <Form {...form}>
           <form
@@ -162,42 +163,54 @@ export function LoginForm({ searchParams }: { searchParams: { next?: string } })
               </p>
             )}
 
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting
-                ? isSignUp
-                  ? "Creating account..."
-                  : "Logging in..."
-                : isSignUp
-                  ? "Create Account"
-                  : auth.signIn}
-            </Button>
-          </form>
-        </Form>
-        <div className="mt-6 text-center text-sm text-muted-foreground">
-          {isSignUp ? (
-            <>
-              Already have an account?{" "}
-              <button
-                type="button"
+            <div className="grid grid-cols-2 gap-4">
+              <Button
+                type="submit"
+                variant={isSignUp ? "outline" : "default"}
+                className="w-full"
                 onClick={() => setIsSignUp(false)}
-                className="font-medium text-primary hover:underline"
+                disabled={isSubmitting}
               >
                 {auth.signIn}
-              </button>
-            </>
-          ) : (
-            <>
-              Don&apos;t have an account?{" "}
-              <button
-                type="button"
+              </Button>
+              <Button
+                type="submit"
+                variant={isSignUp ? "default" : "outline"}
+                className="w-full"
                 onClick={() => setIsSignUp(true)}
-                className="font-medium text-primary hover:underline"
+                disabled={isSubmitting}
               >
                 Create Account
-              </button>
-            </>
-          )}
-        </div>
+              </Button>
+            </div>
+
+          </form>
+        </Form>
+        {/* <div className="mt-6 text-center text-sm text-muted-foreground flex justify-between">
+
+          <>
+            Already have an account?{" "}
+            <button
+              type="button"
+              onClick={() => setIsSignUp(false)}
+              className="font-medium text-primary hover:underline"
+            >
+              {auth.signIn}
+            </button>
+          </>
+
+          <>
+            Don&apos;t have an account?{" "}
+            <button
+              type="button"
+              onClick={() => setIsSignUp(true)}
+              className="font-medium text-primary hover:underline"
+            >
+              Create Account
+            </button>
+          </>
+
+        </div> */}
       </CardContent>
     </Card>
   );

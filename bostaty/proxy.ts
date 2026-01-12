@@ -5,7 +5,7 @@ import { mintAppToken } from "./lib/auth/mintToken";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "./lib/supabase/server";
 import { InvitationService } from "./lib/services/invitation-services";
-
+const TENANT_CACHE_COOKIE = "app_tenant_cache"
 export async function proxy(request: NextRequest) {
   try {
     // 1. Supabase Session Check
@@ -41,72 +41,104 @@ export async function proxy(request: NextRequest) {
         console.error("DEBUG: JWT Decode failed:", jwtError);
         return response;
       }
-
-      // 4. Token Minting & Tenant Lookup
-      // 4. Token Minting & Tenant Lookup
-      try {
-        const result = await mintAppToken(decoded.sub);
-        const inviteToken = request.nextUrl.searchParams.get("token");
-
-        if (!result) {
-          console.warn(`User ${decoded.sub} has no tenant membership`);
-
-          // 1. If we see a token in the URL, we MUST keep it.
-          // 2. If we DON'T see it in the URL, check if we saved it in a cookie earlier.
-          const activeToken = inviteToken || request.cookies.get("pending_invite_token")?.value;
-
-          if (activeToken && activeToken !== "null") {
-            const url = request.nextUrl.pathname;
-
-            // Redirect to accept-invitation if not already there
-            if (!url.startsWith("/accept-invitation")) {
-              const acceptUrl = new URL("/accept-invitation", request.url);
-              acceptUrl.searchParams.set("token", activeToken);
-
-              const redirectRes = NextResponse.redirect(acceptUrl);
-
-              // STORE THE TOKEN IN A COOKIE so it's never lost again
-              redirectRes.cookies.set("pending_invite_token", activeToken, {
-                maxAge: 3600, // 1 hour
-                path: "/"
-              });
-              return redirectRes;
-            }
-          } else {
-            // No token anywhere? Send to onboarding
-            if (!request.nextUrl.pathname.startsWith("/onboarding")) {
-              return NextResponse.redirect(new URL("/onboarding", request.url));
-            }
+      const userId = decoded.sub
+      const cachedData = request.cookies.get(TENANT_CACHE_COOKIE)?.value
+      let tenantId: string | null = null;
+      let appToken: string | null = null;
+      if (cachedData) {
+        try {
+          const parsedData = JSON.parse(cachedData)
+          if (parsedData.userId === userId) {
+            tenantId = parsedData.tenantId
+            appToken = parsedData.appToken
           }
+        } catch (err) {
+          console.error("DEBUG: Cached data parsing failed:", err);
+        }
+      }
+
+      // 4. Token Minting & Tenant Lookup
+      if (!tenantId || !appToken) {
+        try {
+          const result = await mintAppToken(decoded.sub);
+          const inviteToken = request.nextUrl.searchParams.get("token");
+
+          if (!result) {
+            console.warn(`User ${decoded.sub} has no tenant membership`);
+
+            // 1. If we see a token in the URL, we MUST keep it.
+            // 2. If we DON'T see it in the URL, check if we saved it in a cookie earlier.
+            const activeToken = inviteToken || request.cookies.get("pending_invite_token")?.value;
+
+            if (activeToken && activeToken !== "null") {
+              const url = request.nextUrl.pathname;
+
+              // Redirect to accept-invitation if not already there
+              if (!url.startsWith("/accept-invitation")) {
+                const acceptUrl = new URL("/accept-invitation", request.url);
+                acceptUrl.searchParams.set("token", activeToken);
+
+                const redirectRes = NextResponse.redirect(acceptUrl);
+
+                // STORE THE TOKEN IN A COOKIE so it's never lost again
+                redirectRes.cookies.set("pending_invite_token", activeToken, {
+                  maxAge: 3600, // 1 hour
+                  path: "/"
+                });
+                return redirectRes;
+              }
+            } else {
+              // No token anywhere? Send to onboarding
+              if (!request.nextUrl.pathname.startsWith("/onboarding")) {
+                return NextResponse.redirect(new URL("/onboarding", request.url));
+              }
+            }
+            return response;
+          }
+
+          if (result) {
+            tenantId = result.tenantId
+            appToken = result.token
+          }
+
+          // 5. Header Injection
+          const newHeaders = new Headers(request.headers);
+          if (tenantId) newHeaders.set('x-tenant-id', tenantId);
+          if (appToken) newHeaders.set('x-app-token', appToken);
+
+          const finalResponse = NextResponse.next({
+            request: {
+              headers: newHeaders,
+            },
+          });
+          if (!cachedData && tenantId && appToken) {
+            finalResponse.cookies.set(TENANT_CACHE_COOKIE, JSON.stringify({
+              userId,
+              tenantId,
+              appToken
+            }), {
+              maxAge: 3600,
+              path: "/",
+              httpOnly: true,
+              sameSite: "lax",
+              secure: process.env.NODE_ENV === "production",
+            })
+          }
+          // ✅ Preserve cookies
+          response.cookies.getAll().forEach((cookie) => {
+            finalResponse.cookies.set(
+              cookie.name,
+              cookie.value,
+              cookie
+            );
+          });
+
+          return finalResponse;
+        } catch (mintError) {
+          console.error("DEBUG: mintAppToken threw an error:", mintError);
           return response;
         }
 
-        const { tenantId, token } = result;
-
-        // 5. Header Injection
-        const newHeaders = new Headers(request.headers);
-        newHeaders.set('x-tenant-id', tenantId);
-        newHeaders.set('x-app-token', token);
-
-        const finalResponse = NextResponse.next({
-          request: {
-            headers: newHeaders,
-          },
-        });
-
-        // ✅ Preserve cookies
-        response.cookies.getAll().forEach((cookie) => {
-          finalResponse.cookies.set(
-            cookie.name,
-            cookie.value,
-            cookie
-          );
-        });
-
-        return finalResponse;
-      } catch (mintError) {
-        console.error("DEBUG: mintAppToken threw an error:", mintError);
-        return response;
       }
 
     }
