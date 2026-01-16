@@ -8,154 +8,87 @@ import { InvitationService } from "./lib/services/invitation-services";
 const TENANT_CACHE_COOKIE = "app_tenant_cache"
 export async function proxy(request: NextRequest) {
   try {
-    // 1. Supabase Session Check
     const response = await updateSession(request);
-    // DO NOT OVERRIDE REDIRECTS
-    if (response.headers.get("location")) {
-      return response;
-    }
-    // 2. Cookie Extraction
+    if (response.headers.get("location")) return response;
 
-    const supabase = await createClient()
-    const { data, error } = await supabase.auth.getSession()
-    if (data.session) {
-      const supabaseToken = data.session.access_token;
-      console.log(supabaseToken)
-      if (!supabaseToken) {
-        console.log("DEBUG: No Supabase token found in cookies.");
-        return response;
-      }
+    const supabase = await createClient();
+    const { data } = await supabase.auth.getUser();
 
-      // 3. JWT Decoding
-      let decoded: any;
-      try {
-        // Note: jwt.decode does not verify the signature. 
-        // If you need security here, use jwt.verify(token, secret)
-        decoded = jwt.decode(supabaseToken);
+    if (data?.user) {
+      const userId = data.user.id;
 
-        if (!decoded || !decoded.sub) {
-          console.error("DEBUG: Token decoded but 'sub' (User ID) is missing.", decoded);
-          return response;
+      // --- 1. INDEPENDENT INVITATION CHECK ---
+      // We check for tokens regardless of whether they already have a tenant
+      const inviteToken = request.nextUrl.searchParams.get("token");
+      const cookieToken = request.cookies.get("pending_invite_token")?.value;
+      const activeInviteToken = (inviteToken && inviteToken !== "null") ? inviteToken : cookieToken;
+
+      if (activeInviteToken && activeInviteToken !== "null") {
+        // If they are on the accept page, let them through
+        if (request.nextUrl.pathname.startsWith(`/accept-invitation?token=${activeInviteToken}`)) {
+          const inviteRes = NextResponse.next();
+          inviteRes.cookies.set("pending_invite_token", activeInviteToken, { maxAge: 3600, path: "/" });
+          return inviteRes;
         }
-      } catch (jwtError) {
-        console.error("DEBUG: JWT Decode failed:", jwtError);
-        return response;
+        // Otherwise, if we have a token, FORCE them to the acceptance flow
+        // const acceptUrl = new URL("/accept-invitation", request.url);
+        // acceptUrl.searchParams.set("token", activeInviteToken);
+        // const inviteRes = NextResponse.redirect(acceptUrl);
+        // inviteRes.cookies.set("pending_invite_token", activeInviteToken, { maxAge: 3600, path: "/" });
+        // return inviteRes;
       }
-      const userId = decoded.sub
-      const cachedData = request.cookies.get(TENANT_CACHE_COOKIE)?.value
+
+      // --- 2. TENANT CONTEXT RESOLUTION ---
+      const cachedData = request.cookies.get(TENANT_CACHE_COOKIE)?.value;
       let tenantId: string | null = null;
       let appToken: string | null = null;
+
       if (cachedData) {
-        try {
-          const parsedData = JSON.parse(cachedData)
-          if (parsedData.userId === userId) {
-            tenantId = parsedData.tenantId
-            appToken = parsedData.appToken
-          }
-        } catch (err) {
-          console.error("DEBUG: Cached data parsing failed:", err);
+        const parsed = JSON.parse(cachedData);
+        if (parsed.userId === userId) {
+          tenantId = parsed.tenantId;
+          appToken = parsed.token;
         }
       }
 
-      // 4. Token Minting & Tenant Lookup
+      // --- 3. FALLBACK TO DB (Default Tenant) ---
       if (!tenantId || !appToken) {
-        try {
-          const result = await mintAppToken(decoded.sub);
-          const inviteToken = request.nextUrl.searchParams.get("token");
+        const result = await mintAppToken(userId);
 
-          if (!result) {
-            console.warn(`User ${decoded.sub} has no tenant membership`);
-
-            // 1. If we see a token in the URL, we MUST keep it.
-            // 2. If we DON'T see it in the URL, check if we saved it in a cookie earlier.
-            const activeToken = inviteToken || request.cookies.get("pending_invite_token")?.value;
-
-            if (activeToken && activeToken !== "null") {
-              const url = request.nextUrl.pathname;
-
-              // Redirect to accept-invitation if not already there
-              if (!url.startsWith("/accept-invitation")) {
-                const acceptUrl = new URL("/accept-invitation", request.url);
-                acceptUrl.searchParams.set("token", activeToken);
-
-                const redirectRes = NextResponse.redirect(acceptUrl);
-
-                // STORE THE TOKEN IN A COOKIE so it's never lost again
-                redirectRes.cookies.set("pending_invite_token", activeToken, {
-                  maxAge: 3600, // 1 hour
-                  path: "/"
-                });
-                return redirectRes;
-              }
-            } else {
-              // No token anywhere? Send to onboarding
-              if (!request.nextUrl.pathname.startsWith("/onboarding")) {
-                return NextResponse.redirect(new URL("/onboarding", request.url));
-              }
-            }
-            return response;
+        if (!result) {
+          // Truly no memberships and no invites? Go to onboarding.
+          if (!request.nextUrl.pathname.startsWith("/onboarding")) {
+            return NextResponse.redirect(new URL("/onboarding", request.url));
           }
-
-          if (result) {
-            tenantId = result.tenantId
-            appToken = result.token
-          }
-
-          // 5. Header Injection
-          const newHeaders = new Headers(request.headers);
-          if (tenantId) newHeaders.set('x-tenant-id', tenantId);
-          if (appToken) newHeaders.set('x-app-token', appToken);
-
-          const finalResponse = NextResponse.next({
-            request: {
-              headers: newHeaders,
-            },
-          });
-          if (!cachedData && tenantId && appToken) {
-            finalResponse.cookies.set(TENANT_CACHE_COOKIE, JSON.stringify({
-              userId,
-              tenantId,
-              appToken
-            }), {
-              maxAge: 3600,
-              path: "/",
-              httpOnly: true,
-              sameSite: "lax",
-              secure: process.env.NODE_ENV === "production",
-            })
-          }
-          // ✅ Preserve cookies
-          response.cookies.getAll().forEach((cookie) => {
-            finalResponse.cookies.set(
-              cookie.name,
-              cookie.value,
-              cookie
-            );
-          });
-
-          return finalResponse;
-        } catch (mintError) {
-          console.error("DEBUG: mintAppToken threw an error:", mintError);
           return response;
         }
-
+        tenantId = result.tenantId;
+        appToken = result.token;
       }
 
+      // --- 4. HEADER INJECTION ---
+      const newHeaders = new Headers(request.headers);
+      newHeaders.set('x-tenant-id', tenantId!);
+      newHeaders.set('x-app-token', appToken!);
+
+      const finalResponse = NextResponse.next({
+        request: { headers: newHeaders },
+      });
+
+      // --- 5. SYNC COOKIES ---
+      if (!cachedData) {
+        finalResponse.cookies.set(TENANT_CACHE_COOKIE, JSON.stringify({ userId, tenantId, token: appToken }), {
+          maxAge: 3600, path: "/", httpOnly: true, sameSite: "lax",
+          secure: process.env.NODE_ENV === "production",
+        });
+      }
+
+      response.cookies.getAll().forEach((c) => finalResponse.cookies.set(c.name, c.value, c));
+      return finalResponse;
     }
-
-
-
-
-  } catch (globalError) {
-    // Catch-all for updateSession or unexpected logic failures
-    console.error("DEBUG: Global Proxy Error:", globalError);
-
-    // Fallback to basic next() to prevent the whole site from crashing
-    return NextResponse.next({
-      request: {
-        headers: request.headers,
-      },
-    });
+    return response;
+  } catch (error) {
+    return NextResponse.next({ request: { headers: request.headers } });
   }
 }
 
