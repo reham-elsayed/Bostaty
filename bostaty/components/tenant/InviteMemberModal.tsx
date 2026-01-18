@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { inviteMemberSchema, InviteMemberDTO } from "@/lib/dtos/invitation.dto";
 import { inviteMemberAction } from "@/lib/actions/tenant-actions";
-import { TenantRole } from "@prisma/client";
+import { TenantRole } from "../../types/Roles";
 import {
     Dialog,
     DialogContent,
@@ -31,6 +31,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { UserPlus } from "lucide-react";
+import { toast } from "sonner";
 
 interface InviteMemberModalProps {
     tenantId: string;
@@ -57,8 +58,10 @@ export function InviteMemberModal({ tenantId, inviterId }: InviteMemberModalProp
             const result = await inviteMemberAction(tenantId, inviterId, data);
             if (result.error) {
                 setError(result.error);
+
             } else {
                 setOpen(false);
+                toast.success("Member invited successfully");
                 form.reset();
             }
         } catch (e) {

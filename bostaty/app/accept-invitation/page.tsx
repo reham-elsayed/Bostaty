@@ -1,78 +1,52 @@
-import AcceptInvitationForm from "@/components/AcceptInvitationForm/AcceptInvitationForm"
-import { InvitationService } from "@/lib/services/invitation-services"
-import { createClient } from "@/lib/supabase/server"
-import Link from "next/link"
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import prisma from "@/lib/prisma"; // Or your service layer
+import AcceptInvitationForm from "@/components/AcceptInvitationForm/AcceptInvitationForm";
+import { createClient } from "@/lib/supabase/client";
 
 export default async function AcceptInvitationPage({
     searchParams,
 }: {
-    searchParams: { token?: string }
+    searchParams: { token?: string };
 }) {
-    const token = (await searchParams).token
+    const token = (await searchParams).token;
 
-    if (!token) {
+    if (!token) redirect("/404");
+
+    // 1. Verify token exists in DB (Safe for public eyes)
+    const invitation = await prisma.tenantInvitation.findUnique({
+        where: { token },
+        include: { tenant: true }
+    });
+
+    if (!invitation) redirect("/invalid-token");
+
+    // 2. Save token to Cookie (The "Memo" for later)
+    (await cookies()).set("pending_invite_token", token, { path: "/", maxAge: 3600 });
+
+    // 3. Check if user is logged in
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // If NOT logged in, show a "Login to Join" view
+    if (!user) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-screen p-4">
-                <p className="text-destructive font-semibold">Invalid or missing invitation token.</p>
+            <div className="p-8 text-center">
+                <h1>You've been invited to join {invitation.tenant.name}</h1>
+                <p>Please sign in to accept your invitation.</p>
+                <a href={`/login?next=/accept-invitation?token=${token}`} className="btn">
+                    Sign In to Join
+                </a>
             </div>
-        )
+        );
     }
 
-    const invite = await InvitationService.getInvitationMetadata(token)
-
-    if (!invite) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center">
-                <h1 className="text-xl font-bold mb-2">Invitation Not Found</h1>
-                <p className="text-muted-foreground mb-4">This invitation has expired or is invalid.</p>
-                <Link href="/" className="text-primary hover:underline">Go to Home</Link>
-            </div>
-        )
-    }
-
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
+    // If LOGGED in, show the "Accept" button (calls a Server Action)
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center">
-            <div className="max-w-md w-full p-8 border rounded-xl shadow-sm bg-card">
-                <h1 className="text-2xl font-bold mb-4">Accept Invitation</h1>
-                <p className="mb-6 text-muted-foreground text-lg">
-                    You've been invited to join <strong>{invite.tenant.name}</strong>
-                    {invite.inviter?.name || invite.inviter?.email ? <> by <strong>{invite.inviter.name || invite.inviter.email}</strong></> : ""}.
-                </p>
-
-                {user ? (
-                    user.email === invite.email ? (
-                        <AcceptInvitationForm token={token} />
-                    ) : (
-                        <div className="space-y-4">
-                            <p className="text-destructive font-medium">
-                                This invitation was sent to <strong>{invite.email}</strong>, but you are logged in as <strong>{user.email}</strong>.
-                            </p>
-                            <p className="text-sm text-balance">Please log out and log in with the account matching the invitation email to continue.</p>
-                        </div>
-                    )
-                ) : (
-                    <div className="space-y-6">
-                        <p className="text-muted-foreground">You need an account to join this workspace.</p>
-                        <div className="flex flex-col gap-3">
-                            <Link
-                                href={`/login?email=${encodeURIComponent(invite.email)}&next=${encodeURIComponent(`/accept-invitation?token=${token}`)}`}
-                                className="w-full py-2.5 px-4 bg-primary text-primary-foreground rounded-lg hover:opacity-90 font-medium transition-all"
-                            >
-                                Create Account
-                            </Link>
-                            <Link
-                                href={`/login?next=${encodeURIComponent(`/accept-invitation?token=${token}`)}`}
-                                className="w-full py-2.5 px-4 border rounded-lg hover:bg-accent font-medium transition-all"
-                            >
-                                Log In
-                            </Link>
-                        </div>
-                    </div>
-                )}
-            </div>
+        <div className="p-8 text-center">
+            <h1>Join {invitation.tenant.name}</h1>
+            <p>Logged in as {user.email}</p>
+            <AcceptInvitationForm token={token} />
         </div>
-    )
+    );
 }

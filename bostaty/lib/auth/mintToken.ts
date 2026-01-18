@@ -10,8 +10,8 @@ export async function mintAppToken(userId: string) {
     // Resolve tenant
     const { data: ut, error: utError } = await supabaseAdmin
         .from("tenant_members")
-        .select("tenantId")
-        .eq("userId", userId)
+        .select('"tenantId"')
+        .eq('"userId"', userId)
         .limit(1)
         .maybeSingle();
 

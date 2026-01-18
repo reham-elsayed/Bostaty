@@ -3,6 +3,7 @@ import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import Navbar from "@/components/navbar";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner"
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -37,6 +38,7 @@ export default function RootLayout({
           <Navbar />
           {children}
         </ThemeProvider>
+        <Toaster />
       </body>
     </html>
   );

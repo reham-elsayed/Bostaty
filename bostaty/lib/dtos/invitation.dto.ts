@@ -1,10 +1,11 @@
 import { z } from "zod";
-import { TenantRole } from "@prisma/client";
+import { TenantRole } from "../../types/Roles";
+
 
 export const inviteMemberSchema = z.object({
-    email: z.string().email("Invalid email address"),
-    role: z.nativeEnum(TenantRole, {
-        errorMap: () => ({ message: "Please select a valid role" }),
+    email: z.email("Invalid email address"),
+    role: z.enum(TenantRole, {
+        error: "Please select a valid role" ,
     }),
 });
 
