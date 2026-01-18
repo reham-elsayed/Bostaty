@@ -50,13 +50,15 @@ export async function updateSession(request: NextRequest) {
     !request.nextUrl.pathname.startsWith("/invalid-token")
   ) {
     // no user, potentially respond by redirecting the user to the login page
+    console.log("updateSession: No user found, redirecting to /login from " + request.nextUrl.pathname);
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
   if (user && (request.nextUrl.pathname === "/" || request.nextUrl.pathname === "/login")) {
+    console.log("updateSession: User logged in, redirecting to /workspace from " + request.nextUrl.pathname);
     const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
+    url.pathname = "/workspace";
     return NextResponse.redirect(url);
   }
   // IMPORTANT: You *must* return the supabaseResponse object as it is.

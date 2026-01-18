@@ -121,4 +121,26 @@ export class TenantService {
         })
     }
 
+    static async getUserTenants(userId: string) {
+        return await prisma.tenant.findMany({
+            where: {
+                members: {
+                    some: {
+                        userId,
+                    },
+                },
+            },
+            include: {
+                members: {
+                    where: {
+                        userId,
+                    },
+                    select: {
+                        role: true,
+                    },
+                },
+            },
+        })
+    }
+
 }

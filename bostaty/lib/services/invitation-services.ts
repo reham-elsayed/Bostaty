@@ -166,4 +166,35 @@ export class InvitationService {
         return invitation
     }
 
+    static async getUserInvitations(email: string) {
+        return await prisma.tenantInvitation.findMany({
+            where: {
+                email,
+                acceptedAt: null,
+                expiresAt: {
+                    gt: new Date(),
+                },
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+            include: {
+                tenant: {
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                    },
+                },
+                inviter: {
+                    select: {
+                        id: true,
+                        email: true,
+                        name: true,
+                    },
+                },
+            },
+        })
+    }
+
 }

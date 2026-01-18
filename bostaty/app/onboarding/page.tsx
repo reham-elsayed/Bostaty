@@ -29,9 +29,12 @@ async function OnboardingLogic() {
   redirect(`/dashboard`);
 }
 
-export default async function OnboardingPage() {
-
+async function OnboardingLogicComponent() {
   await OnboardingLogic()
+  return null
+}
+
+export default function OnboardingPage() {
   return (
     <div className="flex-1 w-full flex flex-col gap-12 items-center justify-center min-h-[60vh]">
       <div className="max-w-md w-full space-y-8 text-center">
@@ -47,7 +50,7 @@ export default async function OnboardingPage() {
             <p className="text-muted-foreground animate-pulse">Initializing your agency profile...</p>
           </div>
         }>
-
+          <OnboardingLogicComponent />
         </Suspense>
       </div>
     </div>

@@ -1,10 +1,7 @@
 import { updateSession } from "@/lib/supabase/proxy";
 import { NextRequest, NextResponse } from "next/server";
-import jwt from 'jsonwebtoken';
 import { mintAppToken } from "./lib/auth/mintToken";
-import { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "./lib/supabase/server";
-import { InvitationService } from "./lib/services/invitation-services";
 const TENANT_CACHE_COOKIE = "app_tenant_cache"
 export async function proxy(request: NextRequest) {
   try {
@@ -15,13 +12,14 @@ export async function proxy(request: NextRequest) {
     const { data } = await supabase.auth.getUser();
     const user = data?.user;
 
-    const isIgnoredPath = ["/invites", "/accept-invitation", "/onboarding"].some(
+    const isIgnoredPath = ["/invites", "/accept-invitation", "/onboarding", "/workspace", "/invalid-token", "/tenants", "/tenant/create"].some(
       path => request.nextUrl.pathname.startsWith(path)
     );
 
     // 1. If on an ignored path, just return the session-updated response immediately.
     // This stops the middleware from trying to find a tenant where one might not exist yet.
     if (isIgnoredPath) {
+      console.log(`Proxy: Ignored path ${request.nextUrl.pathname}, passing through.`);
       return response;
     }
 
@@ -31,7 +29,8 @@ export async function proxy(request: NextRequest) {
 
       // 2. If user is logged in but has no tenant membership
       if (!result) {
-        return NextResponse.redirect(new URL("/onboarding", request.url));
+        console.log(`Proxy: User ${userId} has no tenant token, redirecting to /workspace from ${request.nextUrl.pathname}`);
+        return NextResponse.redirect(new URL("/workspace", request.url));
       }
 
       // 3. User has a tenant -> Inject Headers

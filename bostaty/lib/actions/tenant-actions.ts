@@ -55,3 +55,29 @@ export async function inviteMemberAction(
         };
     }
 }
+
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+
+export async function createAutoTenant(_formData?: FormData) {
+    const supabase = await createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user || !user.email) {
+        return { error: "User not authenticated" };
+    }
+
+    try {
+        const result = await TenantService.handleUserOnboarding(user.id, user.email);
+
+        if (result.type === 'PERSONAL_FLOW') {
+            return { error: result.message, code: 'REQUIRES_MANUAL' };
+        }
+
+        revalidatePath("/workspace");
+        return { success: true, tenant: result.tenant };
+    } catch (error: any) {
+        return { error: error.message || "Failed to create workspace" };
+    }
+}

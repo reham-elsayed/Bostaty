@@ -20,6 +20,7 @@ export async function mintAppToken(userId: string) {
         return null;
     }
     if (!ut) {
+        console.log("mintAppToken: No tenant found for user", userId);
         return null
     }
     const { data: userResp } =
