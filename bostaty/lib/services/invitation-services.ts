@@ -197,4 +197,44 @@ export class InvitationService {
         })
     }
 
+    //accept invite by invite id and userid when logged in already
+    static async acceptInviteById(inviteId: string, userEmail: string, userId: string) {
+
+        return prisma.$transaction(async (tx) => {
+            const invite = await tx.tenantInvitation.findFirst({
+                where: {
+                    id: inviteId, // Use ID instead of Token Hash
+                    acceptedAt: null,
+                    expiresAt: { gt: new Date() },
+                },
+            })
+
+            if (!invite) throw new Error('Invalid or expired invitation');
+
+            // Reuse your existing email verification logic
+            const user = await tx.user.findUnique({
+                where: { email: userEmail },
+                select: { email: true }
+            })
+
+            if (!user || user.email !== invite.email) {
+                throw new Error('Email mismatch');
+            }
+
+            // Create member...
+            await tx.tenantMember.create({
+                data: { tenantId: invite.tenantId, userId, role: invite.role }
+            })
+
+            // Mark as accepted
+            const inviteAccepted = await tx.tenantInvitation.update({
+                where: { id: inviteId },
+                data: { acceptedAt: new Date() }
+            })
+
+            console.log(inviteAccepted)
+            return inviteAccepted
+        })
+    }
+
 }

@@ -11,7 +11,7 @@ async function DashboardHeader() {
     const tenantId = headersTenant.get("x-tenant-id");
 
     if (!tenantId) {
-        redirect("/tenants");
+        redirect("/workspace");
     }
 
     const tenant = await TenantService.getUserTenant(tenantId);
@@ -34,7 +34,7 @@ async function DashboardHeader() {
                     <span className="text-xs font-mono font-medium">{tenant?.slug}</span>
                     <span className="text-xs font-mono font-medium">{tenant?.members[0]?.role}</span>
                 </div>
-                {tenantId && user?.id && (
+                {user?.role === "OWNER" || user?.role === "ADMIN" && (
                     <InviteMemberModal tenantId={tenantId} inviterId={user.id} />
                 )}
             </div>

@@ -50,7 +50,7 @@ export function TenantList({ tenants }: TenantListProps) {
                         </CardContent>
                         <CardFooter>
                             <Button asChild className="w-full group-hover:bg-primary/90" variant="secondary">
-                                <Link href={`/dashboard/${tenant.id}`}>
+                                <Link href={`/dashboard`}>
                                     Launch Workspace <ArrowRight className="ml-2 h-4 w-4" />
                                 </Link>
                             </Button>

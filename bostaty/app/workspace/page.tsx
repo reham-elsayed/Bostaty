@@ -5,22 +5,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { AutoSetupButton } from "@/components/workspace/auto-setup-button";
 import { InvitationService } from "@/lib/services/invitation-services";
 import { TenantService } from "@/lib/services/tenant-service";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/server";
 import { LayoutDashboard, PlusCircle, Sparkles, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 export default async function WorkspacesPage() {
-    const { data } = await createClient().auth.getUser();
+    const supabase = await createClient()
 
-    if (!data.user) {
-        redirect('/login');
-    }
+    const { data, error } = await supabase.auth.getUser()
 
-    const invites = await InvitationService.getUserInvitations(data.user.email as string);
-    const tenants = await TenantService.getUserTenants(data.user.id as string);
+    const invites = await InvitationService.getUserInvitations(data.user?.email as string);
+    const tenants = await TenantService.getUserTenants(data.user?.id as string);
 
     return (
+
         <div className="container max-w-5xl mx-auto py-12 px-4 space-y-12">
 
             <div className="space-y-2">
@@ -28,34 +28,36 @@ export default async function WorkspacesPage() {
                     <LayoutDashboard className="h-6 w-6" />
                     <span className="text-sm font-semibold uppercase tracking-wider">Workspaces</span>
                 </div>
-                <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                    Welcome back, {data.user.user_metadata?.name || 'User'}
-                </h1>
+                <Suspense>
+                    <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                        Welcome back, {data.user?.user_metadata?.name || 'User'}
+                    </h1>
+                </Suspense>
                 <p className="text-muted-foreground text-lg max-w-2xl">
                     Manage your workspaces, accept invitations, or create a new team environment effectively.
                 </p>
             </div>
-
-            <div className="grid gap-8">
-                {invites.length > 0 && (
-                    <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <div className="flex items-center gap-2 mb-4">
-                            <div className="p-2 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
-                                <UserPlus className="h-5 w-5" />
+            <Suspense>
+                <div className="grid gap-8">
+                    {invites.length > 0 && (
+                        <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div className="flex items-center gap-2 mb-4">
+                                <div className="p-2 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
+                                    <UserPlus className="h-5 w-5" />
+                                </div>
+                                <h2 className="text-xl font-semibold">Pending Invitations</h2>
                             </div>
-                            <h2 className="text-xl font-semibold">Pending Invitations</h2>
-                        </div>
-                        <InvitationList invites={invites} />
-                    </section>
-                )}
+                            <InvitationList invites={invites} />
+                        </section>
+                    )}
 
-                {tenants.length > 0 && (
-                    <section className="animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
-                        <TenantList tenants={tenants} />
-                    </section>
-                )}
-            </div>
-
+                    {tenants.length > 0 && (
+                        <section className="animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
+                            <TenantList tenants={tenants} />
+                        </section>
+                    )}
+                </div>
+            </Suspense>
             {/* The Refactored Onboarding Trigger */}
             <section className="mt-8 border-t pt-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
                 <Card className="border-dashed border-2 bg-gradient-to-br from-background to-muted/50">
@@ -81,5 +83,6 @@ export default async function WorkspacesPage() {
                 </Card>
             </section>
         </div>
+
     )
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { acceptInviteAction } from "@/app/workspace/actions";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -37,11 +38,10 @@ interface InvitationListProps {
 export function InvitationList({ invites }: InvitationListProps) {
     const [isAccepting, setIsAccepting] = useState<string | null>(null);
 
-    const handleAccept = async (token: string) => {
-        setIsAccepting(token);
-        // TODO: implement accept action or redirect to accept link
-        // For now we assume the accept link is /invite/{token}
-        window.location.href = `/invite/${token}`;
+    const handleAccept = async (invite: Invitation) => {
+        setIsAccepting(invite.token);
+
+        acceptInviteAction(invite.id, invite.email)
     };
 
     if (!invites || invites.length === 0) return null;
@@ -63,7 +63,7 @@ export function InvitationList({ invites }: InvitationListProps) {
                             <Button
                                 className="w-full text-sm"
                                 size="sm"
-                                onClick={() => handleAccept(invite.token)}
+                                onClick={() => handleAccept(invite)}
                                 disabled={!!isAccepting}
                             >
                                 {isAccepting === invite.token ? "Accepting..." : "Accept Invitation"}
