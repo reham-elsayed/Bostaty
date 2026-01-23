@@ -1,77 +1,43 @@
-"use client";
-
-import { acceptInviteAction } from "@/app/workspace/actions";
-import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import { Check, Mail } from "lucide-react";
-import { useState } from "react";
-// We'll define a type that matches the service return type
-// Since we don't have the exact inferred type easily available in a client component without some work, 
-// we will define the shape we expect.
-
-interface Invitation {
-    id: string;
-    email: string;
-    token: string;
-    tenant: {
-        id: string;
-        name: string;
-        slug: string;
-    };
-    inviter: {
-        name: string | null;
-        email: string;
-    };
-}
+import { InvitationService } from "@/lib/services/invitation-services";
+import { InvitationListClient } from "./InvitationListClient";
+import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { UserPlus, Mail } from "lucide-react";
 
 interface InvitationListProps {
-    invites: any[]; // Using any[] temporarily to avoid strict Prisma type issues in client component, or I could use Partial<Invitation>
+    userEmail: string;
 }
 
-export function InvitationList({ invites }: InvitationListProps) {
-    const [isAccepting, setIsAccepting] = useState<string | null>(null);
+export async function InvitationList({ userEmail }: InvitationListProps) {
+    const invites = await InvitationService.getUserInvitations(userEmail);
 
-    const handleAccept = async (invite: Invitation) => {
-        setIsAccepting(invite.token);
-
-        acceptInviteAction(invite.id, invite.email)
-    };
-
-    if (!invites || invites.length === 0) return null;
+    if (!invites || invites.length === 0) {
+        return (
+            <div className="space-y-4 mb-8">
+                <div className="flex items-center gap-2 mb-4">
+                    <div className="p-2 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
+                        <UserPlus className="h-5 w-5" />
+                    </div>
+                    <h2 className="text-xl font-semibold">Pending Invitations</h2>
+                </div>
+                <Card className="border-dashed py-8">
+                    <CardHeader className="text-center">
+                        <div className="mx-auto rounded-full bg-muted p-3 mb-2 w-fit">
+                            <Mail className="h-6 w-6 text-muted-foreground" />
+                        </div>
+                        <CardTitle className="text-lg">No pending invitations</CardTitle>
+                        <CardDescription>
+                            When you are invited to a workspace, it will appear here.
+                        </CardDescription>
+                    </CardHeader>
+                </Card>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-4 mb-8">
             <h3 className="text-lg font-medium">Pending Invitations</h3>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {invites.map((invite) => (
-                    <Card key={invite.id} className="border-indigo-100 dark:border-indigo-900 border shadow-sm hover:shadow-md transition-shadow">
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-base font-semibold">{invite.tenant.name}</CardTitle>
-                            <CardDescription className="flex items-center gap-2 text-xs">
-                                <Mail className="h-3 w-3" />
-                                Invited by {invite.inviter.name || invite.inviter.email}
-                            </CardDescription>
-                        </CardHeader>
-                        <CardFooter>
-                            <Button
-                                className="w-full text-sm"
-                                size="sm"
-                                onClick={() => handleAccept(invite)}
-                                disabled={!!isAccepting}
-                            >
-                                {isAccepting === invite.token ? "Accepting..." : "Accept Invitation"}
-                            </Button>
-                        </CardFooter>
-                    </Card>
-                ))}
-            </div>
+            <InvitationListClient userEmail={userEmail} invites={invites as any} />
         </div>
     );
 }

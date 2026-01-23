@@ -33,7 +33,7 @@ This document provides detailed technical use cases for all logic flows in the B
 8. System updates session cookies
 9. Redirect to auth callback `/callback`
 10. Callback middleware processes session
-11. User redirected to `/dashboard`
+11. User redirected to `/workspace`
 
 **Postconditions:** User authenticated with active session
 
