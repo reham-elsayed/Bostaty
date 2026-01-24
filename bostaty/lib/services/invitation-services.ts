@@ -1,7 +1,7 @@
-// domain/invitations/invitation.service.ts
 import prisma from '@/lib/prisma'
 import crypto from 'node:crypto'
-import { TenantRole } from '@prisma/client'
+import { TenantRole } from '@/types/Roles'
+import { TenantService } from './tenant-service'
 
 export class InvitationService {
     static async createInvite(
@@ -41,6 +41,16 @@ export class InvitationService {
 
         if (existingMember) {
             throw new Error("User is already a member of this tenant")
+        }
+
+        // Prevent multiple owners
+        if (data.role === TenantRole.OWNER) {
+            const existingOwner = await prisma.tenantMember.findFirst({
+                where: { tenantId, role: TenantRole.OWNER }
+            });
+            if (existingOwner) {
+                throw new Error("This tenant already has an owner. Only one owner is allowed.")
+            }
         }
 
         // Create invitation
@@ -90,7 +100,12 @@ export class InvitationService {
             if (!user || user.email !== invite.email) {
                 throw new Error('This invitation was sent to a different email address. Please log in with the correct account.')
             }
-
+            // 1. Check if they already own a tenant
+            if (invite.role === TenantRole.OWNER) {
+                if (await TenantService.isOwner(userId)) {
+                    throw new Error("You already own a tenant");
+                }
+            }
             await tx.tenantMember.create({
                 data: {
                     tenantId: invite.tenantId,
@@ -222,6 +237,12 @@ export class InvitationService {
             }
 
             // Create member...
+            if (invite.role === TenantRole.OWNER) {
+                if (await TenantService.isOwner(userId)) {
+                    throw new Error("You already own a tenant");
+                }
+            }
+
             await tx.tenantMember.create({
                 data: { tenantId: invite.tenantId, userId, role: invite.role }
             })

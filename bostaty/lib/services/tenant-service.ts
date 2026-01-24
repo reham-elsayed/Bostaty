@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma"
-import { TenantRole } from "@prisma/client"
+import { TenantData, TenantRole } from "@/types/Roles";
 import crypto from "node:crypto"
 export class TenantService {
 
@@ -13,7 +13,10 @@ export class TenantService {
         if (this.PUBLIC_DOMAINS.includes(domain.toLowerCase())) {
             return { type: 'PERSONAL_FLOW' as const, message: 'User must name their own workspace' };
         }
-
+        // 1. Check if they already own a tenant
+        if (await this.isOwner(userId)) {
+            throw new Error("You already own a tenant");
+        }
         // 2. Generate the @slug from the domain
         const domainName = domain.split('.')[0];
         const slug = `@${domainName}`;
@@ -40,23 +43,33 @@ export class TenantService {
                 });
                 return { type: 'JOINED_EXISTING' as const, tenant };
             } else {
-                // 5. CREATE NEW: This is the first person from this agency
-                tenant = await tx.tenant.create({
-                    data: {
-                        name: domainName.charAt(0).toUpperCase() + domainName.slice(1),
-                        slug: slug,
-                        subdomain: domainName,
-                        settings: { theme: "light" },
-                    },
-                });
+                const tenantData = {
+                    name: domainName.charAt(0).toUpperCase() + domainName.slice(1),
+                    slug: slug,
+                    subdomain: domainName,
+                    settings: { theme: "light" },
+                    userId: userId,
+                    role: TenantRole.OWNER,
 
-                await tx.tenantMember.create({
-                    data: {
-                        tenantId: tenant.id,
-                        userId: userId,
-                        role: TenantRole.OWNER,
-                    },
-                });
+                }
+                tenant = await TenantService.setUpNewTenant(tx, tenantData)
+                // // 5. CREATE NEW: This is the first person from this agency
+                // tenant = await tx.tenant.create({
+                //     data: {
+                //         name: domainName.charAt(0).toUpperCase() + domainName.slice(1),
+                //         slug: slug,
+                //         subdomain: domainName,
+                //         settings: { theme: "light" },
+                //     },
+                // });
+
+                // await tx.tenantMember.create({
+                //     data: {
+                //         tenantId: tenant.id,
+                //         userId: userId,
+                //         role: TenantRole.OWNER,
+                //     },
+                // });
                 return { type: 'CREATED_NEW' as const, tenant };
             }
         });
@@ -72,24 +85,39 @@ export class TenantService {
     }) {
         const slug = `@${data.slug}`;
         return await prisma.$transaction(async (tx) => {
-            // 1. Create tenant
-            const tenant = await tx.tenant.create({
-                data: {
-                    name: data.name,
-                    slug: slug,
-                    subdomain: data.subdomain,
-                    settings: { theme: "light" },
-                },
-            })
 
-            // 2. Add creator as owner
-            await tx.tenantMember.create({
-                data: {
-                    tenantId: tenant.id,
-                    userId: data.userId,
-                    role: TenantRole.OWNER,
-                },
-            })
+            // 1. Check if they already own a tenant
+            if (await TenantService.isOwner(data.userId)) {
+                throw new Error("You already own a tenant");
+            }
+            const tenantData: TenantData = {
+                name: data.name,
+                slug: slug,
+                subdomain: data.subdomain,
+                userId: data.userId,
+                role: TenantRole.OWNER,
+                settings: { theme: "light" },
+            }
+
+            // 1. Create tenant
+            const tenant = await TenantService.setUpNewTenant(tx, tenantData)
+            // const tenant = await tx.tenant.create({
+            //     data: {
+            //         name: data.name,
+            //         slug: slug,
+            //         subdomain: data.subdomain,
+            //         settings: { theme: "light" },
+            //     },
+            // })
+
+            // // 2. Add creator as owner
+            // await tx.tenantMember.create({
+            //     data: {
+            //         tenantId: tenant.id,
+            //         userId: data.userId,
+            //         role: TenantRole.OWNER,
+            //     },
+            // })
             return tenant
         })
     }
@@ -164,4 +192,37 @@ export class TenantService {
         });
     }
 
+    static async setUpNewTenant(tx: PrismaTransactionClient, data: TenantData) {
+        const tenant = await tx.tenant.create({
+            data: {
+                name: data.name,
+                slug: data.slug,
+                subdomain: data.subdomain,
+                settings: { theme: "light" },
+            },
+        });
+
+        await tx.tenantMember.create({
+            data: {
+                tenantId: tenant.id,
+                userId: data.userId,
+                role: data.role,
+            },
+        });
+        return tenant
+    }
+
+    static async isOwner(userId: string) {
+        const ownership = await prisma.tenantMember.findFirst({
+            where: { userId, role: TenantRole.OWNER }
+        });
+        return !!ownership;
+    }
+
+    static async hasOwner(tenantId: string) {
+        const owner = await prisma.tenantMember.findFirst({
+            where: { tenantId, role: TenantRole.OWNER }
+        });
+        return !!owner;
+    }
 }
