@@ -1,78 +1,17 @@
-import { InvitationList } from "@/components/invitation-list";
-import { TenantList } from "@/components/tenant-list";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { AutoSetupButton } from "@/components/workspace/auto-setup-button";
-import { InvitationService } from "@/lib/services/invitation-services";
-import { TenantService } from "@/lib/services/tenant-service";
-import { createClientfactory } from "@/lib/supabase/factory";
-import { createClient } from "@/lib/supabase/server";
-import { LayoutDashboard, PlusCircle, Sparkles, UserPlus } from "lucide-react";
-import Link from "next/link";
-import { redirect } from "next/navigation";
+import { WorkspaceContent } from "@/components/workspace/workspace-content";
 import { Suspense } from "react";
-import { InvitationSkeleton, TenantSkeleton } from "@/components/workspace/workspace-skeletons";
 
-export default async function WorkspacesPage() {
-    const supabase = await createClientfactory()
-
-    const { data, error } = await supabase.auth.getUser()
-
-
-
+export default function WorkspacesPage() {
     return (
-
-        <div className="container max-w-5xl mx-auto py-12 px-4 space-y-12">
-
-            <div className="space-y-2">
-                <div className="flex items-center gap-2 text-primary mb-2">
-                    <LayoutDashboard className="h-6 w-6" />
-                    <span className="text-sm font-semibold uppercase tracking-wider">Workspaces</span>
-                </div>
-                <Suspense>
-                    <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                        Welcome back, {data.user?.user_metadata?.name || 'User'}
-                    </h1>
-                </Suspense>
-                <p className="text-muted-foreground text-lg max-w-2xl">
-                    Manage your workspaces, accept invitations, or create a new team environment effectively.
-                </p>
+        <Suspense fallback={<div className="container max-w-5xl mx-auto py-12 px-4 space-y-12">
+            <div className="space-y-4 animate-pulse">
+                <div className="h-4 w-24 bg-muted rounded" />
+                <div className="h-10 w-64 bg-muted rounded" />
+                <div className="h-6 w-96 bg-muted rounded" />
             </div>
-            <div className="grid gap-8">
-                <Suspense fallback={<InvitationSkeleton />}>
-                    {data.user?.email && <InvitationList userEmail={data.user?.email} />}
-                </Suspense>
-
-                <Suspense fallback={<TenantSkeleton />}>
-                    {data.user?.id && <TenantList userId={data.user?.id} />}
-                </Suspense>
-            </div>
-
-            {/* The Refactored Onboarding Trigger */}
-            <section className="mt-8 border-t pt-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
-                <Card className="border-dashed border-2 bg-gradient-to-br from-background to-muted/50">
-                    <CardHeader className="text-center pb-2">
-                        <div className="mx-auto rounded-full bg-primary/10 p-3 mb-2 w-fit">
-                            <Sparkles className="h-6 w-6 text-primary" />
-                        </div>
-                        <CardTitle className="text-2xl">Need a new workspace?</CardTitle>
-                        <CardDescription className="text-base max-w-md mx-auto">
-                            Get started quickly with your organization's domain or set up a custom workspace manually.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-6 pb-8">
-                        <AutoSetupButton />
-                        <span className="text-muted-foreground text-sm font-medium">or</span>
-                        <Button variant="outline" size="lg" asChild className="w-full sm:w-auto">
-                            <Link href="/tenants">
-                                <PlusCircle className="mr-2 h-4 w-4" />
-                                Create manually
-                            </Link>
-                        </Button>
-                    </CardContent>
-                </Card>
-            </section>
-        </div>
-
+        </div>}>
+            <WorkspaceContent />
+        </Suspense>
     )
 }
+

@@ -10,30 +10,72 @@ export async function acceptInvitationAction(token: string) {
     // const supabase = await createClient()
     // const { data: { user }, error } = await supabase.auth.getUser()
 
-    // if (!user) {
-    //     // Redirect to signup, preserving the invitation token in the URL
-    //     const loginUrl = `/login?next=${encodeURIComponent(`/accept-invitation?token=${token}`)}`
-
-    //     redirect(loginUrl)
-    // }
-
-    let success = false
+    const cookieStore = await cookies()
+    let invitation = null
     try {
-        const invitation = await InvitationService.getInvitationMetadata(token);
+        invitation = await InvitationService.getInvitationMetadata(token);
         if (invitation) {
-            // Save token to Cookie (The "Memo" for later)
-            (await cookies()).set("pending_invite_token", token, { path: "/", maxAge: 3600 });
+            // Set the pending token in a cookie for possible handshake later
+            cookieStore.set("pending_invite_token", token, { path: "/", maxAge: 3600 });
+        } else {
+            return { error: "Invalid or expired invitation" }
         }
 
-        success = true
+        // Check if user is already logged in
+        const supabase = await createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+
+        if (user) {
+            // They are logged in! We can actually accept it right now.
+            try {
+                await InvitationService.acceptInvite(token, user.id)
+                cookieStore.delete("pending_invite_token")
+                // Success! Redirect them to their new workspace
+                redirect('/workspace')
+            } catch (acceptError: any) {
+                // If they are already a member, just send them to workspace
+                if (acceptError.message?.includes("already a member")) {
+                    redirect('/workspace')
+                }
+                throw acceptError
+            }
+        }
+
+        // Guest user: just return the invitation metadata so the page can render
+        return { success: true, invitation, requiresLogin: true }
     } catch (error: any) {
+        if (error.message === 'NEXT_REDIRECT') throw error; // Allow Next.js redirects to work
         return {
             error: error.message || "Failed to accept invitation"
         }
     }
+}
 
-    if (success) {
-        // After success, redirect to the dashboard or the workspace
-        redirect('/dashboard')
+
+export async function completePendingInvitationAction() {
+    const cookieStore = await cookies()
+    const token = cookieStore.get("pending_invite_token")?.value
+
+    if (!token) return { success: false, message: "No pending invitation" }
+
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) return { success: false, message: "User not logged in" }
+
+    try {
+        await InvitationService.acceptInvite(token, user.id)
+
+        // Clear the cookie after successful acceptance
+        cookieStore.delete("pending_invite_token")
+
+        return { success: true, message: "Invitation accepted successfully" }
+    } catch (error: any) {
+        console.error("Error completing pending invitation:", error)
+        // Optionally clear the cookie if the token is invalid/expired anyway
+        if (error.message === 'Invalid or expired invitation') {
+            cookieStore.delete("pending_invite_token")
+        }
+        return { success: false, error: error.message }
     }
 }

@@ -13,9 +13,14 @@ export default function AcceptInvitationForm({ token }: { token: string }) {
             const result = await acceptInvitationAction(token)
             if (result?.error) {
                 setError(result.error)
+            } else if (result?.requiresLogin) {
+                // If the user isn't logged in, send them to login
+                // After login, they land on /workspace where the handshake completes it
+                window.location.href = `/login?next=${encodeURIComponent('/workspace')}`
             }
         })
     }
+
 
     return (
         <form action={handleAction}>
