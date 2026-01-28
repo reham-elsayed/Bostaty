@@ -2367,6 +2367,7 @@ export namespace Prisma {
     subdomain: number
     plan: number
     settings: number
+    enabledModules: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -2400,6 +2401,7 @@ export namespace Prisma {
     subdomain?: true
     plan?: true
     settings?: true
+    enabledModules?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -2484,6 +2486,7 @@ export namespace Prisma {
     subdomain: string
     plan: string
     settings: JsonValue | null
+    enabledModules: string[]
     createdAt: Date
     updatedAt: Date
     _count: TenantCountAggregateOutputType | null
@@ -2512,6 +2515,7 @@ export namespace Prisma {
     subdomain?: boolean
     plan?: boolean
     settings?: boolean
+    enabledModules?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     members?: boolean | Tenant$membersArgs<ExtArgs>
@@ -2526,6 +2530,7 @@ export namespace Prisma {
     subdomain?: boolean
     plan?: boolean
     settings?: boolean
+    enabledModules?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["tenant"]>
@@ -2537,6 +2542,7 @@ export namespace Prisma {
     subdomain?: boolean
     plan?: boolean
     settings?: boolean
+    enabledModules?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["tenant"]>
@@ -2548,11 +2554,12 @@ export namespace Prisma {
     subdomain?: boolean
     plan?: boolean
     settings?: boolean
+    enabledModules?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type TenantOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "subdomain" | "plan" | "settings" | "createdAt" | "updatedAt", ExtArgs["result"]["tenant"]>
+  export type TenantOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "subdomain" | "plan" | "settings" | "enabledModules" | "createdAt" | "updatedAt", ExtArgs["result"]["tenant"]>
   export type TenantInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     members?: boolean | Tenant$membersArgs<ExtArgs>
     invitations?: boolean | Tenant$invitationsArgs<ExtArgs>
@@ -2574,6 +2581,7 @@ export namespace Prisma {
       subdomain: string
       plan: string
       settings: Prisma.JsonValue | null
+      enabledModules: string[]
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["tenant"]>
@@ -3007,6 +3015,7 @@ export namespace Prisma {
     readonly subdomain: FieldRef<"Tenant", 'String'>
     readonly plan: FieldRef<"Tenant", 'String'>
     readonly settings: FieldRef<"Tenant", 'Json'>
+    readonly enabledModules: FieldRef<"Tenant", 'String[]'>
     readonly createdAt: FieldRef<"Tenant", 'DateTime'>
     readonly updatedAt: FieldRef<"Tenant", 'DateTime'>
   }
@@ -3494,6 +3503,7 @@ export namespace Prisma {
     tenantId: number
     userId: number
     role: number
+    metadata: number
     createdAt: number
     _all: number
   }
@@ -3520,6 +3530,7 @@ export namespace Prisma {
     tenantId?: true
     userId?: true
     role?: true
+    metadata?: true
     createdAt?: true
     _all?: true
   }
@@ -3601,6 +3612,7 @@ export namespace Prisma {
     tenantId: string
     userId: string
     role: $Enums.TenantRole
+    metadata: JsonValue | null
     createdAt: Date
     _count: TenantMemberCountAggregateOutputType | null
     _min: TenantMemberMinAggregateOutputType | null
@@ -3626,6 +3638,7 @@ export namespace Prisma {
     tenantId?: boolean
     userId?: boolean
     role?: boolean
+    metadata?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
@@ -3636,6 +3649,7 @@ export namespace Prisma {
     tenantId?: boolean
     userId?: boolean
     role?: boolean
+    metadata?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
@@ -3646,6 +3660,7 @@ export namespace Prisma {
     tenantId?: boolean
     userId?: boolean
     role?: boolean
+    metadata?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
@@ -3656,10 +3671,11 @@ export namespace Prisma {
     tenantId?: boolean
     userId?: boolean
     role?: boolean
+    metadata?: boolean
     createdAt?: boolean
   }
 
-  export type TenantMemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "userId" | "role" | "createdAt", ExtArgs["result"]["tenantMember"]>
+  export type TenantMemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "userId" | "role" | "metadata" | "createdAt", ExtArgs["result"]["tenantMember"]>
   export type TenantMemberInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
@@ -3684,6 +3700,7 @@ export namespace Prisma {
       tenantId: string
       userId: string
       role: $Enums.TenantRole
+      metadata: Prisma.JsonValue | null
       createdAt: Date
     }, ExtArgs["result"]["tenantMember"]>
     composites: {}
@@ -4114,6 +4131,7 @@ export namespace Prisma {
     readonly tenantId: FieldRef<"TenantMember", 'String'>
     readonly userId: FieldRef<"TenantMember", 'String'>
     readonly role: FieldRef<"TenantMember", 'TenantRole'>
+    readonly metadata: FieldRef<"TenantMember", 'Json'>
     readonly createdAt: FieldRef<"TenantMember", 'DateTime'>
   }
     
@@ -5698,6 +5716,7 @@ export namespace Prisma {
     subdomain: 'subdomain',
     plan: 'plan',
     settings: 'settings',
+    enabledModules: 'enabledModules',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -5710,6 +5729,7 @@ export namespace Prisma {
     tenantId: 'tenantId',
     userId: 'userId',
     role: 'role',
+    metadata: 'metadata',
     createdAt: 'createdAt'
   };
 
@@ -5918,6 +5938,7 @@ export namespace Prisma {
     subdomain?: StringFilter<"Tenant"> | string
     plan?: StringFilter<"Tenant"> | string
     settings?: JsonNullableFilter<"Tenant">
+    enabledModules?: StringNullableListFilter<"Tenant">
     createdAt?: DateTimeFilter<"Tenant"> | Date | string
     updatedAt?: DateTimeFilter<"Tenant"> | Date | string
     members?: TenantMemberListRelationFilter
@@ -5931,6 +5952,7 @@ export namespace Prisma {
     subdomain?: SortOrder
     plan?: SortOrder
     settings?: SortOrderInput | SortOrder
+    enabledModules?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     members?: TenantMemberOrderByRelationAggregateInput
@@ -5947,6 +5969,7 @@ export namespace Prisma {
     name?: StringFilter<"Tenant"> | string
     plan?: StringFilter<"Tenant"> | string
     settings?: JsonNullableFilter<"Tenant">
+    enabledModules?: StringNullableListFilter<"Tenant">
     createdAt?: DateTimeFilter<"Tenant"> | Date | string
     updatedAt?: DateTimeFilter<"Tenant"> | Date | string
     members?: TenantMemberListRelationFilter
@@ -5960,6 +5983,7 @@ export namespace Prisma {
     subdomain?: SortOrder
     plan?: SortOrder
     settings?: SortOrderInput | SortOrder
+    enabledModules?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: TenantCountOrderByAggregateInput
@@ -5977,6 +6001,7 @@ export namespace Prisma {
     subdomain?: StringWithAggregatesFilter<"Tenant"> | string
     plan?: StringWithAggregatesFilter<"Tenant"> | string
     settings?: JsonNullableWithAggregatesFilter<"Tenant">
+    enabledModules?: StringNullableListFilter<"Tenant">
     createdAt?: DateTimeWithAggregatesFilter<"Tenant"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Tenant"> | Date | string
   }
@@ -5989,6 +6014,7 @@ export namespace Prisma {
     tenantId?: StringFilter<"TenantMember"> | string
     userId?: UuidFilter<"TenantMember"> | string
     role?: EnumTenantRoleFilter<"TenantMember"> | $Enums.TenantRole
+    metadata?: JsonNullableFilter<"TenantMember">
     createdAt?: DateTimeFilter<"TenantMember"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
@@ -5999,6 +6025,7 @@ export namespace Prisma {
     tenantId?: SortOrder
     userId?: SortOrder
     role?: SortOrder
+    metadata?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     user?: UserOrderByWithRelationInput
     tenant?: TenantOrderByWithRelationInput
@@ -6013,6 +6040,7 @@ export namespace Prisma {
     tenantId?: StringFilter<"TenantMember"> | string
     userId?: UuidFilter<"TenantMember"> | string
     role?: EnumTenantRoleFilter<"TenantMember"> | $Enums.TenantRole
+    metadata?: JsonNullableFilter<"TenantMember">
     createdAt?: DateTimeFilter<"TenantMember"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
@@ -6023,6 +6051,7 @@ export namespace Prisma {
     tenantId?: SortOrder
     userId?: SortOrder
     role?: SortOrder
+    metadata?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: TenantMemberCountOrderByAggregateInput
     _max?: TenantMemberMaxOrderByAggregateInput
@@ -6037,6 +6066,7 @@ export namespace Prisma {
     tenantId?: StringWithAggregatesFilter<"TenantMember"> | string
     userId?: UuidWithAggregatesFilter<"TenantMember"> | string
     role?: EnumTenantRoleWithAggregatesFilter<"TenantMember"> | $Enums.TenantRole
+    metadata?: JsonNullableWithAggregatesFilter<"TenantMember">
     createdAt?: DateTimeWithAggregatesFilter<"TenantMember"> | Date | string
   }
 
@@ -6190,6 +6220,7 @@ export namespace Prisma {
     subdomain: string
     plan?: string
     settings?: NullableJsonNullValueInput | InputJsonValue
+    enabledModules?: TenantCreateenabledModulesInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     members?: TenantMemberCreateNestedManyWithoutTenantInput
@@ -6203,6 +6234,7 @@ export namespace Prisma {
     subdomain: string
     plan?: string
     settings?: NullableJsonNullValueInput | InputJsonValue
+    enabledModules?: TenantCreateenabledModulesInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     members?: TenantMemberUncheckedCreateNestedManyWithoutTenantInput
@@ -6216,6 +6248,7 @@ export namespace Prisma {
     subdomain?: StringFieldUpdateOperationsInput | string
     plan?: StringFieldUpdateOperationsInput | string
     settings?: NullableJsonNullValueInput | InputJsonValue
+    enabledModules?: TenantUpdateenabledModulesInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     members?: TenantMemberUpdateManyWithoutTenantNestedInput
@@ -6229,6 +6262,7 @@ export namespace Prisma {
     subdomain?: StringFieldUpdateOperationsInput | string
     plan?: StringFieldUpdateOperationsInput | string
     settings?: NullableJsonNullValueInput | InputJsonValue
+    enabledModules?: TenantUpdateenabledModulesInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     members?: TenantMemberUncheckedUpdateManyWithoutTenantNestedInput
@@ -6242,6 +6276,7 @@ export namespace Prisma {
     subdomain: string
     plan?: string
     settings?: NullableJsonNullValueInput | InputJsonValue
+    enabledModules?: TenantCreateenabledModulesInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -6253,6 +6288,7 @@ export namespace Prisma {
     subdomain?: StringFieldUpdateOperationsInput | string
     plan?: StringFieldUpdateOperationsInput | string
     settings?: NullableJsonNullValueInput | InputJsonValue
+    enabledModules?: TenantUpdateenabledModulesInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -6264,6 +6300,7 @@ export namespace Prisma {
     subdomain?: StringFieldUpdateOperationsInput | string
     plan?: StringFieldUpdateOperationsInput | string
     settings?: NullableJsonNullValueInput | InputJsonValue
+    enabledModules?: TenantUpdateenabledModulesInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -6271,6 +6308,7 @@ export namespace Prisma {
   export type TenantMemberCreateInput = {
     id?: string
     role?: $Enums.TenantRole
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutMembershipsInput
     tenant: TenantCreateNestedOneWithoutMembersInput
@@ -6281,12 +6319,14 @@ export namespace Prisma {
     tenantId: string
     userId: string
     role?: $Enums.TenantRole
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
   }
 
   export type TenantMemberUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumTenantRoleFieldUpdateOperationsInput | $Enums.TenantRole
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutMembershipsNestedInput
     tenant?: TenantUpdateOneRequiredWithoutMembersNestedInput
@@ -6297,6 +6337,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     role?: EnumTenantRoleFieldUpdateOperationsInput | $Enums.TenantRole
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -6305,12 +6346,14 @@ export namespace Prisma {
     tenantId: string
     userId: string
     role?: $Enums.TenantRole
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
   }
 
   export type TenantMemberUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumTenantRoleFieldUpdateOperationsInput | $Enums.TenantRole
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -6319,6 +6362,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     role?: EnumTenantRoleFieldUpdateOperationsInput | $Enums.TenantRole
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -6594,6 +6638,14 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type StringNullableListFilter<$PrismaModel = never> = {
+    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    has?: string | StringFieldRefInput<$PrismaModel> | null
+    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
+    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
   export type TenantCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -6601,6 +6653,7 @@ export namespace Prisma {
     subdomain?: SortOrder
     plan?: SortOrder
     settings?: SortOrder
+    enabledModules?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -6678,6 +6731,7 @@ export namespace Prisma {
     tenantId?: SortOrder
     userId?: SortOrder
     role?: SortOrder
+    metadata?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -6901,6 +6955,10 @@ export namespace Prisma {
     deleteMany?: TenantInvitationScalarWhereInput | TenantInvitationScalarWhereInput[]
   }
 
+  export type TenantCreateenabledModulesInput = {
+    set: string[]
+  }
+
   export type TenantMemberCreateNestedManyWithoutTenantInput = {
     create?: XOR<TenantMemberCreateWithoutTenantInput, TenantMemberUncheckedCreateWithoutTenantInput> | TenantMemberCreateWithoutTenantInput[] | TenantMemberUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: TenantMemberCreateOrConnectWithoutTenantInput | TenantMemberCreateOrConnectWithoutTenantInput[]
@@ -6927,6 +6985,11 @@ export namespace Prisma {
     connectOrCreate?: TenantInvitationCreateOrConnectWithoutTenantInput | TenantInvitationCreateOrConnectWithoutTenantInput[]
     createMany?: TenantInvitationCreateManyTenantInputEnvelope
     connect?: TenantInvitationWhereUniqueInput | TenantInvitationWhereUniqueInput[]
+  }
+
+  export type TenantUpdateenabledModulesInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type TenantMemberUpdateManyWithoutTenantNestedInput = {
@@ -7278,6 +7341,7 @@ export namespace Prisma {
   export type TenantMemberCreateWithoutUserInput = {
     id?: string
     role?: $Enums.TenantRole
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     tenant: TenantCreateNestedOneWithoutMembersInput
   }
@@ -7286,6 +7350,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     role?: $Enums.TenantRole
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
   }
 
@@ -7355,6 +7420,7 @@ export namespace Prisma {
     tenantId?: StringFilter<"TenantMember"> | string
     userId?: UuidFilter<"TenantMember"> | string
     role?: EnumTenantRoleFilter<"TenantMember"> | $Enums.TenantRole
+    metadata?: JsonNullableFilter<"TenantMember">
     createdAt?: DateTimeFilter<"TenantMember"> | Date | string
   }
 
@@ -7392,6 +7458,7 @@ export namespace Prisma {
   export type TenantMemberCreateWithoutTenantInput = {
     id?: string
     role?: $Enums.TenantRole
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutMembershipsInput
   }
@@ -7400,6 +7467,7 @@ export namespace Prisma {
     id?: string
     userId: string
     role?: $Enums.TenantRole
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
   }
 
@@ -7507,6 +7575,7 @@ export namespace Prisma {
     subdomain: string
     plan?: string
     settings?: NullableJsonNullValueInput | InputJsonValue
+    enabledModules?: TenantCreateenabledModulesInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     invitations?: TenantInvitationCreateNestedManyWithoutTenantInput
@@ -7519,6 +7588,7 @@ export namespace Prisma {
     subdomain: string
     plan?: string
     settings?: NullableJsonNullValueInput | InputJsonValue
+    enabledModules?: TenantCreateenabledModulesInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     invitations?: TenantInvitationUncheckedCreateNestedManyWithoutTenantInput
@@ -7576,6 +7646,7 @@ export namespace Prisma {
     subdomain?: StringFieldUpdateOperationsInput | string
     plan?: StringFieldUpdateOperationsInput | string
     settings?: NullableJsonNullValueInput | InputJsonValue
+    enabledModules?: TenantUpdateenabledModulesInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     invitations?: TenantInvitationUpdateManyWithoutTenantNestedInput
@@ -7588,6 +7659,7 @@ export namespace Prisma {
     subdomain?: StringFieldUpdateOperationsInput | string
     plan?: StringFieldUpdateOperationsInput | string
     settings?: NullableJsonNullValueInput | InputJsonValue
+    enabledModules?: TenantUpdateenabledModulesInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     invitations?: TenantInvitationUncheckedUpdateManyWithoutTenantNestedInput
@@ -7600,6 +7672,7 @@ export namespace Prisma {
     subdomain: string
     plan?: string
     settings?: NullableJsonNullValueInput | InputJsonValue
+    enabledModules?: TenantCreateenabledModulesInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     members?: TenantMemberCreateNestedManyWithoutTenantInput
@@ -7612,6 +7685,7 @@ export namespace Prisma {
     subdomain: string
     plan?: string
     settings?: NullableJsonNullValueInput | InputJsonValue
+    enabledModules?: TenantCreateenabledModulesInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     members?: TenantMemberUncheckedCreateNestedManyWithoutTenantInput
@@ -7663,6 +7737,7 @@ export namespace Prisma {
     subdomain?: StringFieldUpdateOperationsInput | string
     plan?: StringFieldUpdateOperationsInput | string
     settings?: NullableJsonNullValueInput | InputJsonValue
+    enabledModules?: TenantUpdateenabledModulesInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     members?: TenantMemberUpdateManyWithoutTenantNestedInput
@@ -7675,6 +7750,7 @@ export namespace Prisma {
     subdomain?: StringFieldUpdateOperationsInput | string
     plan?: StringFieldUpdateOperationsInput | string
     settings?: NullableJsonNullValueInput | InputJsonValue
+    enabledModules?: TenantUpdateenabledModulesInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     members?: TenantMemberUncheckedUpdateManyWithoutTenantNestedInput
@@ -7713,6 +7789,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     role?: $Enums.TenantRole
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
   }
 
@@ -7730,6 +7807,7 @@ export namespace Prisma {
   export type TenantMemberUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumTenantRoleFieldUpdateOperationsInput | $Enums.TenantRole
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutMembersNestedInput
   }
@@ -7738,6 +7816,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     role?: EnumTenantRoleFieldUpdateOperationsInput | $Enums.TenantRole
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -7745,6 +7824,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     role?: EnumTenantRoleFieldUpdateOperationsInput | $Enums.TenantRole
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -7785,6 +7865,7 @@ export namespace Prisma {
     id?: string
     userId: string
     role?: $Enums.TenantRole
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
   }
 
@@ -7802,6 +7883,7 @@ export namespace Prisma {
   export type TenantMemberUpdateWithoutTenantInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumTenantRoleFieldUpdateOperationsInput | $Enums.TenantRole
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutMembershipsNestedInput
   }
@@ -7810,6 +7892,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     role?: EnumTenantRoleFieldUpdateOperationsInput | $Enums.TenantRole
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -7817,6 +7900,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     role?: EnumTenantRoleFieldUpdateOperationsInput | $Enums.TenantRole
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

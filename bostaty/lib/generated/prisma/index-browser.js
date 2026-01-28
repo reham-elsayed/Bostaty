@@ -135,6 +135,7 @@ exports.Prisma.TenantScalarFieldEnum = {
   subdomain: 'subdomain',
   plan: 'plan',
   settings: 'settings',
+  enabledModules: 'enabledModules',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -144,6 +145,7 @@ exports.Prisma.TenantMemberScalarFieldEnum = {
   tenantId: 'tenantId',
   userId: 'userId',
   role: 'role',
+  metadata: 'metadata',
   createdAt: 'createdAt'
 };
 

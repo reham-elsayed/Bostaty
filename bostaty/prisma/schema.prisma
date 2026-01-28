@@ -46,7 +46,8 @@ model Tenant {
   slug      String   @unique
   subdomain String   @unique
   plan      String   @default("free")
-  settings  Json?
+ settings    Json?    @default("{}")
+  enabledModules String[] @default([])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -66,6 +67,7 @@ model TenantMember {
   tenantId  String
   userId    String     @db.Uuid
   role      TenantRole @default(MEMBER)
+  metadata  Json?      @default("{}")
   createdAt DateTime   @default(now())
 
   // Relations

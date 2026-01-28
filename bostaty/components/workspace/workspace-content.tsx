@@ -3,7 +3,6 @@ import { TenantList } from "@/components/tenant-list";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AutoSetupButton } from "@/components/workspace/auto-setup-button";
-import { createClientfactory } from "@/lib/supabase/factory";
 import { LayoutDashboard, PlusCircle, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -11,9 +10,10 @@ import { InvitationSkeleton, TenantSkeleton } from "@/components/workspace/works
 import { TenantService } from "@/lib/services/tenant-service";
 
 import { PendingInvitationHandler } from "./pending-invitation-handler";
+import { createClient } from "@/lib/supabase/server";
 
 export async function WorkspaceContent() {
-    const supabase = await createClientfactory()
+    const supabase = await createClient()
     const { data } = await supabase.auth.getUser()
     const isOwner = data.user ? await TenantService.isOwner(data.user.id) : false;
 
@@ -41,7 +41,7 @@ export async function WorkspaceContent() {
                     {data.user?.id && <TenantList userId={data.user?.id} />}
                 </Suspense>
             </div>
-            {isOwner}
+
             {/* The Refactored Onboarding Trigger */}
             {!isOwner && (
                 <section className="mt-8 border-t pt-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">

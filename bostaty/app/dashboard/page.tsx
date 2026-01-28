@@ -1,10 +1,13 @@
-import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
-import { headers } from "next/headers";
+
 import { Suspense } from "react";
-import HeadersWrapper from "@/components/HeadersWrapper/HeadersWrapper";
 import { TenantService } from "@/lib/services/tenant-service";
 import { InviteMemberModal } from "@/components/tenant/InviteMemberModal";
+import { useTenant } from "@/providers/TenantProvider";
+import { getTenantData } from "./actions";
+import { createClient } from "@/lib/supabase/client";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { DebugTenant } from "@/components/testing/testing";
 
 async function DashboardHeader() {
     const headersTenant = await headers();
@@ -19,13 +22,12 @@ async function DashboardHeader() {
     const tenant = await TenantService.getTenantContext(tenantId, user?.id as string);
 
 
-
     return (
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
             <div>
                 <h1 className="text-3xl font-extrabold tracking-tight">Dashboard</h1>
                 <p className="text-muted-foreground mt-1">
-                    {tenant?.id}
+                    <DebugTenant />
                     Welcome back to <span className="text-foreground font-semibold uppercase">{tenant?.name}</span>
                 </p>
             </div>
@@ -36,7 +38,7 @@ async function DashboardHeader() {
                     <span className="text-xs font-mono font-medium">{tenant?.members[0].role}</span>
                 </div>
                 {(tenant?.members[0].role === "OWNER" || tenant?.members[0].role === "ADMIN") && (
-                    <InviteMemberModal tenantId={tenantId} inviterId={user?.id as string} />
+                    <InviteMemberModal tenantId={tenantId as string} inviterId={user?.id as string} />
                 )}
             </div>
         </header>

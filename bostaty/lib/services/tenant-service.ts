@@ -225,4 +225,15 @@ export class TenantService {
         });
         return !!owner;
     }
+    static async getTenantMetaData(tenantId: string) {
+
+        const tenantData = await prisma.tenant.findUnique({
+            where: { id: tenantId },
+            select: {
+                settings: true,
+                enabledModules: true,
+            }
+        });
+        return tenantData;
+    }
 }
