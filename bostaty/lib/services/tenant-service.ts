@@ -1,11 +1,25 @@
 import prisma from "@/lib/prisma"
 import { TenantData, TenantRole } from "@/types/Roles";
-import crypto from "node:crypto"
+import { Prisma } from "@/lib/generated/prisma";
+
+/**
+ * Service to handle tenant-related operations including onboarding, 
+ * creation, and retrieval of tenant data and context.
+ */
 export class TenantService {
 
     // List of domains that should NEVER become automatic tenants
     private static PUBLIC_DOMAINS = ['gmail.com', 'outlook.com', 'hotmail.com', 'yahoo.com', 'icloud.com'];
 
+    /**
+     * Handles the initial onboarding logic for a user based on their email.
+     * For professional domains, it automatically creates or joins a tenant based on the domain.
+     * For public domains, it redirects to a personal workspace flow.
+     * 
+     * @param userId - The ID of the user being onboarded.
+     * @param email - The email address of the user.
+     * @returns An object indicating the onboarding flow type and tenant data if applicable.
+     */
     static async handleUserOnboarding(userId: string, email: string) {
         const domain = email.split('@')[1];
 
@@ -13,23 +27,24 @@ export class TenantService {
         if (this.PUBLIC_DOMAINS.includes(domain.toLowerCase())) {
             return { type: 'PERSONAL_FLOW' as const, message: 'User must name their own workspace' };
         }
-        // 1. Check if they already own a tenant
+
+        // 2. Check if they already own a tenant
         if (await this.isOwner(userId)) {
             throw new Error("You already own a tenant");
         }
-        // 2. Generate the @slug from the domain
+
+        // 3. Generate the @slug from the domain
         const domainName = domain.split('.')[0];
         const slug = `@${domainName}`;
 
         return await prisma.$transaction(async (tx) => {
-            // 3. Check if this agency tenant already exists
+            // 4. Check if this agency tenant already exists
             let tenant = await tx.tenant.findUnique({
                 where: { slug }
             });
 
             if (tenant) {
-                // 4. SIGN INTO EXISTING: Add user to existing tenant as MEMBER
-                // Check if already a member first to avoid duplicates
+                // 5. JOIN EXISTING: Add user to existing tenant as MEMBER
                 await tx.tenantMember.upsert({
                     where: {
                         tenantId_userId: { userId, tenantId: tenant.id }
@@ -38,11 +53,12 @@ export class TenantService {
                     create: {
                         tenantId: tenant.id,
                         userId: userId,
-                        role: TenantRole.MEMBER, // New employees are members, not owners
+                        role: TenantRole.MEMBER,
                     }
                 });
                 return { type: 'JOINED_EXISTING' as const, tenant };
             } else {
+                // 6. CREATE NEW: This is the first person from this agency
                 const tenantData = {
                     name: domainName.charAt(0).toUpperCase() + domainName.slice(1),
                     slug: slug,
@@ -50,33 +66,19 @@ export class TenantService {
                     settings: { theme: "light" },
                     userId: userId,
                     role: TenantRole.OWNER,
-
                 }
                 tenant = await TenantService.setUpNewTenant(tx, tenantData)
-                // // 5. CREATE NEW: This is the first person from this agency
-                // tenant = await tx.tenant.create({
-                //     data: {
-                //         name: domainName.charAt(0).toUpperCase() + domainName.slice(1),
-                //         slug: slug,
-                //         subdomain: domainName,
-                //         settings: { theme: "light" },
-                //     },
-                // });
-
-                // await tx.tenantMember.create({
-                //     data: {
-                //         tenantId: tenant.id,
-                //         userId: userId,
-                //         role: TenantRole.OWNER,
-                //     },
-                // });
                 return { type: 'CREATED_NEW' as const, tenant };
             }
         });
     }
 
-
-    // Create tenant with owner
+    /**
+     * Explicitly creates a new tenant for a user.
+     * 
+     * @param data - The tenant details including name, slug, subdomain, and the creator's userId.
+     * @returns The newly created tenant.
+     */
     static async createTenant(data: {
         name: string
         slug: string
@@ -84,12 +86,13 @@ export class TenantService {
         userId: string
     }) {
         const slug = `@${data.slug}`;
-        return await prisma.$transaction(async (tx) => {
 
+        return await prisma.$transaction(async (tx) => {
             // 1. Check if they already own a tenant
             if (await TenantService.isOwner(data.userId)) {
                 throw new Error("You already own a tenant");
             }
+
             const tenantData: TenantData = {
                 name: data.name,
                 slug: slug,
@@ -99,56 +102,30 @@ export class TenantService {
                 settings: { theme: "light" },
             }
 
-            // 1. Create tenant
-            const tenant = await TenantService.setUpNewTenant(tx, tenantData)
-            // const tenant = await tx.tenant.create({
-            //     data: {
-            //         name: data.name,
-            //         slug: slug,
-            //         subdomain: data.subdomain,
-            //         settings: { theme: "light" },
-            //     },
-            // })
-
-            // // 2. Add creator as owner
-            // await tx.tenantMember.create({
-            //     data: {
-            //         tenantId: tenant.id,
-            //         userId: data.userId,
-            //         role: TenantRole.OWNER,
-            //     },
-            // })
-            return tenant
+            // 2. Setup tenant and owner
+            return await TenantService.setUpNewTenant(tx, tenantData)
         })
     }
 
-    // Get user's tenants
-    static async getUserTenant(tenantId: string) {
-        return await prisma.tenant.findFirst({
-            where: {
-                members: {
-                    some: { tenantId },
-                },
-            },
-            include: {
-                members: {
-                    where: { tenantId },
-                    select: { role: true },
-                },
-            },
-        })
-    }
-    static async getTenantByUserId(userId: string) {
-        return await prisma.tenantMember.findFirst({
-            where: {
-                userId,
-            },
-            include: {
-                tenant: true,
-            },
-        })
+    /**
+     * Retrieves a tenant by its unique ID.
+     * 
+     * @param tenantId - The UUID of the tenant.
+     * @returns The tenant object or null if not found.
+     */
+    static async getTenantById(tenantId: string) {
+        return await prisma.tenant.findUnique({
+            where: { id: tenantId }
+        });
     }
 
+    /**
+     * Retrieves all tenants that a specific user is a member of.
+     * Includes the user's role within each tenant.
+     * 
+     * @param userId - The ID of the user.
+     * @returns A list of tenants with membership info.
+     */
     static async getUserTenants(userId: string) {
         return await prisma.tenant.findMany({
             where: {
@@ -171,6 +148,15 @@ export class TenantService {
         })
     }
 
+    /**
+     * Retrieves the tenant context for a specific user and tenant.
+     * This is typically used for dashboard views where we need both 
+     * the tenant data and the user's permissions.
+     * 
+     * @param tenantId - The ID of the tenant.
+     * @param userId - The ID of the user.
+     * @returns The tenant object with the specific user's membership details.
+     */
     static async getTenantContext(tenantId: string, userId: string) {
         return await prisma.tenant.findFirst({
             where: {
@@ -180,7 +166,6 @@ export class TenantService {
                 }
             },
             include: {
-                // Only include the membership for the person logged in
                 members: {
                     where: { userId: userId },
                     select: {
@@ -192,13 +177,20 @@ export class TenantService {
         });
     }
 
-    static async setUpNewTenant(tx: PrismaTransactionClient, data: TenantData) {
+    /**
+     * Internal helper to set up a new tenant and its initial owner within a transaction.
+     * 
+     * @param tx - The Prisma transaction client.
+     * @param data - The combined tenant and owner data.
+     * @returns The created tenant.
+     */
+    static async setUpNewTenant(tx: Prisma.TransactionClient, data: TenantData) {
         const tenant = await tx.tenant.create({
             data: {
                 name: data.name,
                 slug: data.slug,
                 subdomain: data.subdomain,
-                settings: { theme: "light" },
+                settings: data.settings || { theme: "light" },
             },
         });
 
@@ -212,6 +204,12 @@ export class TenantService {
         return tenant
     }
 
+    /**
+     * Checks if a user is an OWNER of any tenant.
+     * 
+     * @param userId - The ID of the user.
+     * @returns True if the user owns a tenant.
+     */
     static async isOwner(userId: string) {
         const ownership = await prisma.tenantMember.findFirst({
             where: { userId, role: TenantRole.OWNER }
@@ -219,21 +217,63 @@ export class TenantService {
         return !!ownership;
     }
 
+    /**
+     * Checks if a specific tenant has an OWNER assigned.
+     * 
+     * @param tenantId - The ID of the tenant.
+     * @returns True if the tenant has an owner.
+     */
     static async hasOwner(tenantId: string) {
         const owner = await prisma.tenantMember.findFirst({
             where: { tenantId, role: TenantRole.OWNER }
         });
         return !!owner;
     }
-    static async getTenantMetaData(tenantId: string) {
 
-        const tenantData = await prisma.tenant.findUnique({
+    /**
+     * Retrieves public metadata for a tenant, such as settings and enabled modules.
+     * 
+     * @param tenantId - The ID of the tenant.
+     * @returns Metadata including settings and enabled modules.
+     */
+    static async getTenantMetaData(tenantId: string) {
+        return await prisma.tenant.findUnique({
             where: { id: tenantId },
             select: {
                 settings: true,
                 enabledModules: true,
             }
         });
-        return tenantData;
+    }
+
+    /**
+     * Updates the settings for a tenant.
+     * 
+     * @param tenantId - The ID of the tenant.
+     * @param settings - The new settings object.
+     * @returns The updated tenant.
+     */
+    static async updateTenantSettings(tenantId: string, settings: any) {
+        return await prisma.tenant.update({
+            where: { id: tenantId },
+            data: { settings },
+        });
+    }
+
+    /**
+     * Retrieves the specific role of a user within a tenant.
+     * 
+     * @param tenantId - The ID of the tenant.
+     * @param userId - The ID of the user.
+     * @returns The user's role or null if they are not a member.
+     */
+    static async getMemberRole(tenantId: string, userId: string) {
+        const membership = await prisma.tenantMember.findUnique({
+            where: {
+                tenantId_userId: { tenantId, userId },
+            },
+            select: { role: true }
+        });
+        return membership?.role || null;
     }
 }

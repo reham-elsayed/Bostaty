@@ -1,5 +1,5 @@
 import { InvitationList } from "@/components/invitation-list";
-import { TenantList } from "@/components/tenant-list";
+import { TenantList } from "@/components/workspace/tenant-list";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AutoSetupButton } from "@/components/workspace/auto-setup-button";

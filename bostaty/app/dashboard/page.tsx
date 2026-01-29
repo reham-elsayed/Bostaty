@@ -8,6 +8,8 @@ import { createClient } from "@/lib/supabase/client";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { DebugTenant } from "@/components/testing/testing";
+import { Sidebar } from "@/components/Dashboard/DashboardOwnerNavbar";
+import { AppearanceSettings } from "@/components/Dashboard/AppearanceForm";
 
 async function DashboardHeader() {
     const headersTenant = await headers();
@@ -53,22 +55,9 @@ export default async function TenantDashboardPage() {
             </Suspense>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
-                {[
-                    { label: "Active Projects", value: "12", trend: "+2.5%", color: "text-blue-500" },
-                    { label: "Team Members", value: "8", trend: "+1", color: "text-purple-500" },
-                    { label: "Storage Used", value: "45%", trend: "-5%", color: "text-amber-500" },
-                    { label: "Monthly API Calls", value: "2.4k", trend: "+18%", color: "text-emerald-500" }
-                ].map((stat, i) => (
-                    <div key={i} className="p-6 rounded-2xl border border-border bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all cursor-default">
-                        <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{stat.label}</p>
-                        <div className="flex items-end justify-between mt-2">
-                            <h3 className={`text-2xl font-bold ${stat.color}`}>{stat.value}</h3>
-                            <span className="text-xs font-medium text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded italic">
-                                {stat.trend}
-                            </span>
-                        </div>
-                    </div>
-                ))}
+                <Sidebar />
+
+                <AppearanceSettings tenantId={tenantId as string} />
             </div>
 
             <div className="mt-8 p-8 border-2 border-dashed border-border rounded-2xl bg-muted/20 flex flex-col items-center justify-center text-center">

@@ -24,7 +24,7 @@ export async function inviteMemberAction(
         const result = await InvitationService.createInvite(tenantId, inviterId, validated.data);
 
         // Fetch tenant and inviter details for the email
-        const tenant = await TenantService.getUserTenant(tenantId);
+        const tenant = await TenantService.getTenantById(tenantId);
         const inviter = await prisma.user.findUnique({ where: { id: inviterId } });
 
         if (!tenant || !inviter) {

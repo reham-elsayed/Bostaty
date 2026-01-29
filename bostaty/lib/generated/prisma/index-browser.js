@@ -125,7 +125,8 @@ exports.Prisma.UserScalarFieldEnum = {
   email: 'email',
   name: 'name',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  isSuperAdmin: 'isSuperAdmin'
 };
 
 exports.Prisma.TenantScalarFieldEnum = {
