@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useTenant } from "@/providers/TenantProvider";
+import { useTenant } from "@/providers/TenantContext";
 import { DASHBOARD_MENU } from "@/config/menu";
-import { cn } from "@/lib/utils"; 
+import { cn } from "@/lib/utils";
 
 export function Sidebar() {
   const { enabledModules } = useTenant();
   const pathname = usePathname();
-console.log("Enabled Modules in Sidebar:", enabledModules);
+  console.log("Enabled Modules in Sidebar:", enabledModules);
   return (
     <aside className="w-64 border-r bg-card h-full flex flex-col">
       <div className="p-6 font-bold text-xl border-b">
@@ -30,7 +30,7 @@ console.log("Enabled Modules in Sidebar:", enabledModules);
               href={item.href}
               className={cn(
                 "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors",
-                isActive 
+                isActive
                   ? "bg-primary text-white" // Uses your dynamic --primary-color!
                   : "hover:bg-muted text-muted-foreground"
               )}

@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { TenantService } from "../../lib/services/tenant-service";
-import TenantProvider from "@/providers/TenantProvider"; // Import the client provider
+import TenantProvider from "@/providers/TenantProvider";
 
 export async function TenantContext({ children }: { children: React.ReactNode }) {
     const h = await headers();
@@ -17,18 +17,10 @@ export async function TenantContext({ children }: { children: React.ReactNode })
         enabledModules: tenantData?.enabledModules || [],
     };
 
-    const primaryColor = (tenantContextValue.settings as any)?.theme?.primaryColor || '#000';
 
     return (
         <TenantProvider initialValue={tenantContextValue}>
-            <style dangerouslySetInnerHTML={{
-                __html: `
-                :root {
-                  --primary-color: ${primaryColor};
-                }
-              `}
-            }
-            />
+
             {children}
         </TenantProvider>
     );

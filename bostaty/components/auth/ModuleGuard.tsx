@@ -1,6 +1,6 @@
 "use client";
 
-import { useTenant } from "@/providers/TenantProvider";
+import { useTenant } from "@/providers/TenantContext";
 import { ModuleName } from "@/types/nav";
 import { redirect } from "next/navigation";
 import { ReactNode } from "react";

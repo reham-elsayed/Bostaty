@@ -3,7 +3,7 @@
 import { DynamicForm } from "@/components/DynamicFormField/DynamicFormField";
 import { updateTenantSettings } from "@/app/dashboard/actions";
 import { appearanceSchema, fields } from "@/config/settings/AppearanceSettings";
-import { useTenant } from "@/providers/TenantProvider";
+import { useTenant } from "@/providers/TenantContext";
 
 
 export function AppearanceSettings() {

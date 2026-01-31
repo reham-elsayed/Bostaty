@@ -1,7 +1,7 @@
 "use client";
 
 import { useInsertionEffect } from "react";
-import { useTenant } from "@/providers/TenantProvider";
+import { useTenant } from "@/providers/TenantContext";
 import { THEME_REGISTRY } from "@/config/themes";
 
 export function ThemeInjector() {

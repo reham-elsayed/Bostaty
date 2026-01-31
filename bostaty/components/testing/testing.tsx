@@ -1,6 +1,6 @@
 "use client";
 
-import { useTenant } from "@/providers/TenantProvider";
+import { useTenant } from "@/providers/TenantContext";
 
 export function DebugTenant() {
     const data = useTenant();
