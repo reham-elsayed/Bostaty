@@ -237,6 +237,7 @@ export class TenantService {
      * @returns Metadata including settings and enabled modules.
      */
     static async getTenantMetaData(tenantId: string) {
+        if (!tenantId) return null;
         return await prisma.tenant.findUnique({
             where: { id: tenantId },
             select: {

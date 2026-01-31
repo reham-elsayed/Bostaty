@@ -1,4 +1,4 @@
-import { TenantRole } from "@prisma/client"
+import { TenantRole } from "@/lib/generated/prisma"
 export { TenantRole }
 
 export type TenantData = {

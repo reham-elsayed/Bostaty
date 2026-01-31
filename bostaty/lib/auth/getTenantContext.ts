@@ -17,7 +17,7 @@ export async function TenantWrapper({ children }: { children: React.ReactNode })
         enabledModules: tenantData?.enabledModules || [],
     };
 
-    const primaryColor = tenantContextValue.settings?.theme?.primaryColor || '#000';
+
 
     return (
         <TenantProvider initialValue= { tenantContextValue } >

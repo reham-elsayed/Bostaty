@@ -1,72 +1,151 @@
 "use client";
 
-import { useForm, FormProvider } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { FormFieldConfig } from "@/types/form";
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 
 interface DynamicFormProps {
     schema: z.ZodObject<any>;
     fields: FormFieldConfig[];
-    onSubmit: (data: any) => Promise<void>;
+    onSubmit: (data: any) => Promise<any>;
     buttonText?: string;
 }
 
 export function DynamicForm({ schema, fields, onSubmit, buttonText = "Submit" }: DynamicFormProps) {
-    const methods = useForm<z.infer<typeof schema>>({
+    const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
         defaultValues: fields.reduce((acc, field) => ({
             ...acc,
-            [field.name]: field.defaultValue || "",
+            [field.name]: field.defaultValue ?? (field.type === "checkbox" ? false : ""),
         }), {} as any),
     });
 
+    const handleFormSubmit = async (data: any) => {
+        console.log(data)
+        try {
+            toast.promise(onSubmit(data), {
+                loading: "Saving...",
+                success: (data: any) => {
+                    if (data?.error) throw new Error(data.error);
+                    return data?.message || "Changes saved successfully";
+                },
+                error: (err) => err.message || "An unexpected error occurred",
+            });
+
+        } catch (error) {
+            toast.error("An unexpected error occurred");
+            console.error(error);
+        }
+    };
+
     return (
-        <FormProvider {...methods}>
-            <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-4">
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
                 {fields.map((field) => (
-                    <div key={field.name} className="flex flex-col gap-1">
-                        <label className="text-sm font-medium">{field.label}</label>
-
-                        {/* The "Factory" Switch */}
-                        {field.type === "text" && (
-                            <input
-                                type={field.inputType || "text"}
-                                {...methods.register(field.name)}
-                                className="border p-2 rounded"
-                                placeholder={field.placeholder}
-                            />
+                    <FormField
+                        key={field.name}
+                        control={form.control}
+                        name={field.name}
+                        render={({ field: formField }) => (
+                            <FormItem className={field.type === "checkbox" ? "flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4" : ""}>
+                                {field.type !== "checkbox" && <FormLabel className="text-sm font-medium">{field.label}</FormLabel>}
+                                <FormControl>
+                                    {(() => {
+                                        switch (field.type) {
+                                            case "text":
+                                                return <Input
+                                                    type={field.inputType || "text"}
+                                                    placeholder={field.placeholder}
+                                                    {...formField}
+                                                    value={(formField.value as string) ?? ""}
+                                                />;
+                                            case "textarea":
+                                                return <Textarea
+                                                    placeholder={field.placeholder}
+                                                    {...formField}
+                                                    value={(formField.value as string) ?? ""}
+                                                />;
+                                            case "select":
+                                                return (
+                                                    <Select onValueChange={formField.onChange} defaultValue={formField.value as string}>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder={field.placeholder || "Select option"} />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {field.options?.map(opt => (
+                                                                <SelectItem key={opt.value} value={opt.value}>
+                                                                    {opt.label}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                );
+                                            case "checkbox":
+                                                return (
+                                                    <>
+                                                        <Checkbox
+                                                            checked={formField.value as boolean}
+                                                            onCheckedChange={formField.onChange}
+                                                        />
+                                                        <div className="space-y-1 leading-none">
+                                                            <FormLabel className="text-sm font-medium">
+                                                                {field.label}
+                                                            </FormLabel>
+                                                        </div>
+                                                    </>
+                                                );
+                                            case "color":
+                                                return (
+                                                    <div className="flex gap-3 items-center">
+                                                        <Input
+                                                            type="color"
+                                                            {...formField}
+                                                            value={(formField.value as string) ?? ""}
+                                                            className="h-10 w-20 p-1 cursor-pointer"
+                                                        />
+                                                        <span className="text-sm font-mono text-muted-foreground uppercase">{formField.value as string}</span>
+                                                    </div>
+                                                );
+                                            default:
+                                                return null;
+                                        }
+                                    })()}
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
                         )}
-
-                        {field.type === "select" && (
-                            <select {...methods.register(field.name)} className="border p-2 rounded">
-                                {field.options?.map(opt => (
-                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                ))}
-                            </select>
-                        )}
-
-                        {field.type === "color" && (
-                            <input type="color" {...methods.register(field.name)} className="h-10 w-20" />
-                        )}
-
-                        {/* Error Message */}
-                        {methods.formState.errors[field.name] && (
-                            <span className="text-red-500 text-xs">
-                                {methods.formState.errors[field.name]?.message as string}
-                            </span>
-                        )}
-                    </div>
+                    />
                 ))}
 
-                <button
+                <Button
                     type="submit"
-                    disabled={methods.formState.isSubmitting}
-                    className="bg-primary text-white p-2 rounded disabled:opacity-50"
+                    disabled={form.formState.isSubmitting}
+                    className="w-full md:w-auto font-medium"
                 >
-                    {methods.formState.isSubmitting ? "Processing..." : buttonText}
-                </button>
+                    {form.formState.isSubmitting ? "Saving..." : buttonText}
+                </Button>
             </form>
-        </FormProvider>
+        </Form>
     );
 }

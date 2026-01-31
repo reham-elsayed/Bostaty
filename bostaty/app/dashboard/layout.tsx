@@ -1,6 +1,7 @@
+import { ThemeInjector } from "@/components/Dashboard/ThemeInjector/ThemeInjector";
 import { TenantContext } from "@/components/tenant/TenantContext";
 import { redirect } from "next/navigation";
-import { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
 
 export default async function DashboardLayout({
     children,
@@ -10,9 +11,12 @@ export default async function DashboardLayout({
 
 
     return (
-        <TenantContext>
-            <section className="dashboard-layout">{children}</section>
-        </TenantContext>
+        <Suspense>
+            <TenantContext>
+                <ThemeInjector />
+                <section className="dashboard-layout">{children}</section>
+            </TenantContext>
+        </Suspense>
     )
 
 }

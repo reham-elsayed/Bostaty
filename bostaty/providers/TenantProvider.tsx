@@ -1,5 +1,6 @@
 "use client";
 
+import { ThemeInjector } from "@/components/Dashboard/ThemeInjector/ThemeInjector";
 import { createContext, useContext } from "react";
 
 // Define the shape of your data
@@ -20,8 +21,10 @@ export default function TenantProvider({
 }) {
     return (
         <TenantContext.Provider value={initialValue}>
+
             {children}
         </TenantContext.Provider>
+
     );
 }
 
