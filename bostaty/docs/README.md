@@ -56,21 +56,19 @@ Welcome to the Bostaty Multi-Tenant Application documentation. This index provid
 **Purpose:** Business rules and decision logic  
 **Audience:** Business analysts, product owners, developers
 
-**Contents:**
-- Decision trees
-- Workflow diagrams
-- State machines
-- Business rules
-- Authorization matrix
-- Configuration details
+---
 
-**Key Sections:**
-- User Onboarding Decision Tree
-- Tenant Management Workflows
-- Invitation Workflow
-- Access Control & Authorization
-- Middleware Decision Logic
-- Error Handling Strategies
+### 4. [Modules System](./modules.md)
+**Purpose:** Documentation of the modular feature architecture  
+**Audience:** Developers, Product Managers
+
+### 5. [Authorization & Roles](./authorization.md)
+**Purpose:** Role-based access control and permission matrix  
+**Audience:** Developers, Security Auditors
+
+### 6. [Dynamic Form System](./dynamic-forms.md)
+**Purpose:** Guide on using the metadata-driven form engine  
+**Audience:** Developers
 
 ---
 
@@ -475,6 +473,9 @@ pnpm prisma db seed
 - [User Stories](./user-stories.md) - All user-facing features
 - [Technical Use Cases](./technical-use-cases.md) - Implementation details
 - [Business Logic](./business-logic.md) - Workflows and decision trees
+- [Modules System](./modules.md) - Feature gating architecture
+- [Authorization](./authorization.md) - Roles and permissions
+- [Dynamic Forms](./dynamic-forms.md) - Metadata-driven UI system
 
 ---
 

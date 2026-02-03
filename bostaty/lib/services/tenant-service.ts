@@ -262,6 +262,20 @@ export class TenantService {
     }
 
     /**
+     * Updates the enabled modules for a tenant.
+     * 
+     * @param tenantId - The ID of the tenant.
+     * @param enabledModules - The new list of enabled modules.
+     * @returns The updated tenant.
+     */
+    static async updateTenantModules(tenantId: string, enabledModules: string[]) {
+        return await prisma.tenant.update({
+            where: { id: tenantId },
+            data: { enabledModules },
+        });
+    }
+
+    /**
      * Retrieves the specific role of a user within a tenant.
      * 
      * @param tenantId - The ID of the tenant.
@@ -276,5 +290,29 @@ export class TenantService {
             select: { role: true }
         });
         return membership?.role || null;
+    }
+
+    /**
+     * Retrieves the permissions for a member within a tenant.
+     * Permissions are stored in the metadata field of the TenantMember.
+     * 
+     * @param tenantId - The ID of the tenant.
+     * @param userId - The ID of the user.
+     * @returns A list of permissions or an empty array if none found.
+     */
+    static async getMemberPermissions(tenantId: string, userId: string): Promise<string[]> {
+        const membership = await prisma.tenantMember.findUnique({
+            where: {
+                tenantId_userId: { tenantId, userId },
+            },
+            select: { metadata: true }
+        });
+
+        if (!membership || !membership.metadata) {
+            return [];
+        }
+
+        const metadata = membership.metadata as Record<string, any>;
+        return Array.isArray(metadata.permissions) ? metadata.permissions : [];
     }
 }

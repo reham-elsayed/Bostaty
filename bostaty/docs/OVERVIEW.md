@@ -47,6 +47,15 @@ Business rules, decision trees, state machines, and workflow diagrams.
 ### 5. **[invitationflow.md](./invitationflow.md)** - Invitation Flow (Existing)
 Original invitation flow documentation (kept for reference).
 
+### 6. **[modules.md](./modules.md)** - Modules System
+Detailed documentation of the modular architecture, available modules, and implementation patterns.
+
+### 7. **[authorization.md](./authorization.md)** - Authorization & Roles
+Explains the RBAC system, user roles (`OWNER`, `ADMIN`, `MEMBER`), and permission matrix.
+
+### 8. **[dynamic-forms.md](./dynamic-forms.md)** - Dynamic Form System
+Technical guide on using the metadata-driven dynamic form system.
+
 ---
 
 ## 🎯 Quick Access by Role
@@ -126,6 +135,16 @@ Original invitation flow documentation (kept for reference).
 - Token generation and caching
 - Path-based access control
 - Tenant context injection
+
+✅ **Modular Features**
+- Module-based feature gating
+- Frontend protection with `ModuleGuard`
+- Dynamic navigation filtering
+
+✅ **Dynamic Forms**
+- Metadata-driven UI generation
+- Zod integration for validation
+- Support for multiple input types (text, select, color, etc.)
 
 ---
 

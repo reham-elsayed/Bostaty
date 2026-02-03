@@ -6,6 +6,8 @@ export interface TenantValue {
     tenantId: string | null;
     settings: any;
     enabledModules: string[];
+    role: string | null;
+    permissions: string[];
 }
 
 export const TenantContext = createContext<TenantValue | null>(null);

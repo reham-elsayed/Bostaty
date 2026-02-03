@@ -24,6 +24,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import MultipleSelector, { Option } from "../ui/multi-select";
 
 interface DynamicFormProps {
     schema: z.ZodObject<any>;
@@ -37,7 +38,11 @@ export function DynamicForm({ schema, fields, onSubmit, buttonText = "Submit" }:
         resolver: zodResolver(schema),
         defaultValues: fields.reduce((acc, field) => ({
             ...acc,
-            [field.name]: field.defaultValue ?? (field.type === "checkbox" ? false : ""),
+            [field.name]: field.defaultValue ?? (
+                field.type === "checkbox" ? false :
+                    field.type === "multi-select" ? [] :
+                        ""
+            ),
         }), {} as any),
     });
 
@@ -74,8 +79,9 @@ export function DynamicForm({ schema, fields, onSubmit, buttonText = "Submit" }:
                                     {(() => {
                                         switch (field.type) {
                                             case "text":
+                                            case "email":
                                                 return <Input
-                                                    type={field.inputType || "text"}
+                                                    type={field.inputType || (field.type === "email" ? "email" : "text")}
                                                     placeholder={field.placeholder}
                                                     {...formField}
                                                     value={(formField.value as string) ?? ""}
@@ -100,6 +106,23 @@ export function DynamicForm({ schema, fields, onSubmit, buttonText = "Submit" }:
                                                             ))}
                                                         </SelectContent>
                                                     </Select>
+                                                );
+                                            case "multi-select":
+                                                return (
+                                                    <MultipleSelector
+                                                        onChange={(options) => formField.onChange(options.map(o => o.value))}
+                                                        value={field.options?.filter(opt =>
+                                                            (formField.value as string[] || [])?.includes(opt.value)
+                                                        ) || []}
+                                                        commandProps={{
+                                                            label: field.label
+                                                        }}
+                                                        options={field.options}
+                                                        placeholder={field.placeholder}
+                                                        disabled={form.formState.isSubmitting}
+                                                        emptyIndicator={<p className='text-center text-sm'>No results found</p>}
+                                                        className='w-full'
+                                                    />
                                                 );
                                             case "checkbox":
                                                 return (

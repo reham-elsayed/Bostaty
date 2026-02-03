@@ -7,7 +7,7 @@ import { DASHBOARD_MENU } from "@/config/menu";
 import { cn } from "@/lib/utils";
 
 export function Sidebar() {
-  const { enabledModules } = useTenant();
+  const { enabledModules, role } = useTenant();
   const pathname = usePathname();
   console.log("Enabled Modules in Sidebar:", enabledModules);
   return (
@@ -21,6 +21,9 @@ export function Sidebar() {
           const isVisible = item.module === 'CORE' || enabledModules.includes(item.module);
 
           if (!isVisible) return null;
+
+          // Special Role Check: Only OWNERS see Plan Settings
+          if (item.href === '/dashboard/plan' && role !== 'OWNER') return null;
 
           const isActive = pathname === item.href;
 

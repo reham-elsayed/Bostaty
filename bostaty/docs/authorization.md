@@ -1,0 +1,50 @@
+# Authorization & Roles Documentation
+
+Bostaty uses a Role-Based Access Control (RBAC) system within each tenant.
+
+## 👤 Available Roles
+
+| Role | Description |
+|------|-------------|
+| `OWNER` | The creator of the tenant. Has full control over settings, members, and **module subscription (Plan Settings)**. |
+| `ADMIN` | Can manage team members and invitations. |
+| `MEMBER` | Standard user with view-only access to most administrative features. |
+
+## 🔐 Permission Matrix
+
+| Action | `MEMBER` | `ADMIN` | `OWNER` |
+|--------|:---:|:---:|:---:|
+| View Dashboard | ✅ | ✅ | ✅ |
+| Change Appearance | ❌ | ✅ | ✅ |
+| Invite Team Members | ❌ | ✅ | ✅ |
+| Remove Members | ❌ | ❌ | ✅ |
+| Transfer Ownership | ❌ | ❌ | ✅ |
+| Delete Tenant | ❌ | ❌ | ✅ |
+
+## 🛡️ Implementation
+
+### Server-Side Protection
+The `TenantService` provides helper methods to check permissions on the server:
+
+```typescript
+// Example: Check if user has permission to invite
+const role = await TenantService.getMemberRole(tenantId, userId);
+if (role !== 'OWNER' && role !== 'ADMIN') {
+    throw new Error("Unauthorized");
+}
+```
+
+### Client-Side Visibility
+Components can use the `useTenant` hook to show or hide UI elements based on the user's role:
+
+```tsx
+const { role } = useTenant();
+
+{role === 'OWNER' && (
+  <Button onClick={handleDelete}>Delete Tenant</Button>
+)}
+```
+
+## 🔄 Role Transitions
+- **Onboarding**: The first user to create a tenant is automatically assigned the `OWNER` role.
+- **Invitations**: Invites can specify the target role (`ADMIN` or `MEMBER`).
