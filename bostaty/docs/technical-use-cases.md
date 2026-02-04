@@ -385,6 +385,7 @@ const createTenantSchema = z.object({
 3. User enters:
    - Email address
    - Role (MEMBER, ADMIN, OWNER)
+   - Granular Permissions (Module-specific)
 4. Client validates form (Zod schema)
 5. Form submits to `inviteMemberAction(tenantId, inviterId, data)`
 6. Server validates input
@@ -420,8 +421,8 @@ const createTenantSchema = z.object({
 12. Create invitation record:
     ```sql
     INSERT INTO tenant_invitations 
-    (email, token, role, tenantId, inviterId, expiresAt) 
-    VALUES (email, tokenHash, role, tenantId, inviterId, NOW() + INTERVAL '7 days')
+    (email, token, role, tenantId, inviterId, metadata, expiresAt) 
+    VALUES (email, tokenHash, role, tenantId, inviterId, permissions, NOW() + INTERVAL '7 days')
     ```
 13. Fetch tenant and inviter details for email
 14. Generate invitation link: `${baseUrl}/accept-invitation?token=${rawToken}`
@@ -489,8 +490,8 @@ const createTenantSchema = z.object({
     - If user.email ≠ invitation.email → Throw error
 16. Create tenant membership:
     ```sql
-    INSERT INTO tenant_members (tenantId, userId, role) 
-    VALUES (invitation_tenantId, user_id, invitation_role)
+    INSERT INTO tenant_members (tenantId, userId, role, metadata) 
+    VALUES (invitation_tenantId, user_id, invitation_role, invitation_metadata)
     ```
 17. Mark invitation as accepted:
     ```sql

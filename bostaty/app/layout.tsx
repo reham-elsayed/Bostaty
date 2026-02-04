@@ -4,6 +4,7 @@ import { ThemeProvider } from "next-themes";
 import Navbar from "@/components/navbar";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner"
+import { BreadcrumbComponent } from "@/components/Breadcrumbs/Breadcrumbs";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -36,6 +37,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Navbar />
+          <BreadcrumbComponent />
           {children}
         </ThemeProvider>
         <Toaster richColors />

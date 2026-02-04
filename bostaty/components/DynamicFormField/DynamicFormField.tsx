@@ -53,6 +53,7 @@ export function DynamicForm({ schema, fields, onSubmit, buttonText = "Submit" }:
                 loading: "Saving...",
                 success: (data: any) => {
                     if (data?.error) throw new Error(data.error);
+                    form.reset();
                     return data?.message || "Changes saved successfully";
                 },
                 error: (err) => err.message || "An unexpected error occurred",

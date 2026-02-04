@@ -2,25 +2,19 @@
 import { Suspense } from "react";
 import { TenantService } from "@/lib/services/tenant-service";
 import { InviteMemberModal } from "@/components/tenant/InviteMemberModal";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { DebugTenant } from "@/components/testing/testing";
 import { Sidebar } from "@/components/Dashboard/DashboardOwnerNavbar";
 import { AppearanceSettings } from "@/components/Dashboard/AppearanceForm";
+import { getMemberRoleAction, getTenantDataAction } from "./actions";
+import { getAuth } from "@/lib/auth/getTenantId";
 
 async function DashboardHeader() {
-    const headersTenant = await headers();
-    const tenantId = headersTenant.get("x-tenant-id");
 
-    if (!tenantId) {
-        redirect("/workspace");
-    }
-    // Get current user for inviterId
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    const tenant = await TenantService.getTenantContext(tenantId, user?.id as string);
-
+    const { userId } = await getAuth()
+    const tenant = await getTenantDataAction();
+    const role = await getMemberRoleAction()
 
     return (
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
@@ -37,8 +31,14 @@ async function DashboardHeader() {
                     <span className="text-xs font-mono font-medium">{tenant?.slug}</span>
                     <span className="text-xs font-mono font-medium">{tenant?.members[0].role}</span>
                 </div>
-                {(tenant?.members[0].role === "OWNER" || tenant?.members[0].role === "ADMIN") && (
-                    <InviteMemberModal tenantId={tenantId as string} inviterId={user?.id as string} />
+                {(role === "OWNER" || role === "ADMIN") && (
+                    <>
+                        <InviteMemberModal tenantId={tenant?.id as string} inviterId={userId as string} />
+
+                        <Suspense fallback={<div className="h-20 animate-pulse bg-muted rounded-xl mb-8" />}>
+                            <AppearanceSettings />
+                        </Suspense>
+                    </>
                 )}
             </div>
         </header>
@@ -52,12 +52,7 @@ export default async function TenantDashboardPage() {
                 <DashboardHeader />
             </Suspense>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
-                <Sidebar />
-                <Suspense fallback={<div className="h-20 animate-pulse bg-muted rounded-xl mb-8" />}>
-                    <AppearanceSettings />
-                </Suspense>
-            </div>
+
 
             <div className="mt-8 p-8 border-2 border-dashed border-border rounded-2xl bg-muted/20 flex flex-col items-center justify-center text-center">
                 <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">

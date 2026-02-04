@@ -1,3 +1,4 @@
+import { Sidebar } from "@/components/Dashboard/DashboardOwnerNavbar";
 import { ThemeInjector } from "@/components/Dashboard/ThemeInjector/ThemeInjector";
 import { TenantContext } from "@/components/tenant/TenantContext";
 import { redirect } from "next/navigation";
@@ -14,7 +15,15 @@ export default async function DashboardLayout({
         <Suspense>
             <TenantContext>
                 <ThemeInjector />
-                <section className="dashboard-layout">{children}</section>
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
+
+                    <div className="col-span-1">
+                        <Sidebar />
+                    </div>
+                    <section className="dashboard-layout col-span-3">{children}</section>
+
+
+                </div>
             </TenantContext>
         </Suspense>
     )

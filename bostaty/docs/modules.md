@@ -35,6 +35,15 @@ The sidebar automatically filters menu items based on the tenant's enabled modul
 const isVisible = item.module === 'CORE' || enabledModules.includes(item.module);
 ```
 
+### 📩 Invitation Integration
+
+The list of enabled modules directly influences the invitation process. When inviting a new member, the UI dynamically generates the permission set based on active modules using the dynamic form system.
+
+```typescript
+// Example from invitation process:
+const formFields = getInviteFormConfig(enabledModules)
+```
+
 ## 🚀 Adding a New Module
 1. Update `ModuleName` type in `types/nav.ts`.
 2. Add the module to `DASHBOARD_MENU` in `config/menu.ts`.

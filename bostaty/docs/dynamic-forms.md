@@ -64,8 +64,10 @@ const fields: FormFieldConfig[] = [
 | `select` | Dropdown menu. Requires `options`. |
 | `checkbox` | Boolean toggle. |
 | `color` | Color picker input. |
+| `multi-select` | Multi-select input for arrays (e.g., permissions). |
 
 ## ✨ Built-in Features
 - **Validation**: Automatically integrates with Zod for error messaging.
 - **Toasts**: Uses `sonner` for loading, success, and error feedback during submission.
 - **Loading State**: Disables the submit button while `onSubmit` is processing.
+- **Dynamic Configuration**: Schemas and fields can be generated at runtime (e.g., `getInviteFormConfig`) to adapt to tenant settings or enabled modules.

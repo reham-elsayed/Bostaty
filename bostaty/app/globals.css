@@ -153,4 +153,12 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  .gradient {
+    background-color: #A3A1A6;
+    background: linear-gradient(160deg, #DBCAAE 81%, #FDD597 89%);
+  }
+
+
+
 }

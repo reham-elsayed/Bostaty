@@ -30,7 +30,7 @@ export function InviteMemberModal({ tenantId, inviterId }: InviteMemberModalProp
     const [open, setOpen] = useState(false);
     const { enabledModules } = useTenant()
 
-
+    console.log(inviterId)
 
     const formFields = getInviteFormConfig(enabledModules)
 

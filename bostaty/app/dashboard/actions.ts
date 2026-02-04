@@ -1,22 +1,22 @@
 "use server"
 
-import { createClient } from "@/lib/supabase/server";
 import { TenantService } from "@/lib/services/tenant-service";
 import { revalidatePath } from "next/cache";
+import { getAuth } from "@/lib/auth/getTenantId";
 
-export async function getTenantData(tenantId: string, id: string) {
-    const tenant = await TenantService.getTenantContext(tenantId, id);
+export async function getTenantDataAction() {
+    const { tenantId, userId } = await getAuth();
+    const tenant = await TenantService.getTenantContext(tenantId, userId);
     return tenant;
 }
 
-export async function updateTenantSettings(tenantId: string, newSettings: any) {
+export async function updateTenantSettings(newSettings: any) {
     try {
-        const supabase = await createClient();
-        const { data: { user } } = await supabase.auth.getUser();
+        const { tenantId, userId } = await getAuth();
 
-        if (!user) return { error: "Unauthorized" };
+        if (!userId) return { error: "Unauthorized" };
 
-        const role = await TenantService.getMemberRole(tenantId, user.id);
+        const role = await TenantService.getMemberRole(tenantId, userId);
         const isAuthorized = role === "OWNER" || role === "ADMIN";
 
         if (!isAuthorized) {
@@ -33,14 +33,14 @@ export async function updateTenantSettings(tenantId: string, newSettings: any) {
     }
 }
 
-export async function updateTenantModules(tenantId: string, enabledModules: string[]) {
+export async function updateTenantModules(enabledModules: string[]) {
     try {
-        const supabase = await createClient();
-        const { data: { user } } = await supabase.auth.getUser();
+        const { tenantId, userId } = await getAuth();
 
-        if (!user) return { error: "Unauthorized" };
 
-        const role = await TenantService.getMemberRole(tenantId, user.id);
+        if (!userId) return { error: "Unauthorized" };
+
+        const role = await TenantService.getMemberRole(tenantId, userId);
         if (role !== "OWNER") {
             return { error: "Only the workspace owner can manage plan settings." };
         }
@@ -53,4 +53,17 @@ export async function updateTenantModules(tenantId: string, enabledModules: stri
         console.error("Update modules error:", error);
         return { error: error.message || "Failed to update plan" };
     }
+}
+
+
+export async function getUserPermissionsAction() {
+    const { tenantId, userId } = await getAuth();
+    const permissions = await TenantService.getMemberPermissions(tenantId, userId);
+    return permissions;
+}
+
+export async function getMemberRoleAction() {
+    const { tenantId, userId } = await getAuth();
+    const role = await TenantService.getMemberRole(tenantId, userId);
+    return role;
 }

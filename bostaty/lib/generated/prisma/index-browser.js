@@ -157,6 +157,7 @@ exports.Prisma.TenantInvitationScalarFieldEnum = {
   role: 'role',
   tenantId: 'tenantId',
   inviterId: 'inviterId',
+  metadata: 'metadata',
   expiresAt: 'expiresAt',
   createdAt: 'createdAt',
   acceptedAt: 'acceptedAt'

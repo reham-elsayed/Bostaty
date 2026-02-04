@@ -21,6 +21,13 @@ Bostaty uses a Role-Based Access Control (RBAC) system within each tenant.
 | Transfer Ownership | ❌ | ❌ | ✅ |
 | Delete Tenant | ❌ | ❌ | ✅ |
 
+### 🧩 Granular Permissions (Module-Based)
+
+In addition to static roles, the system supports granular permissions stored in the user's `metadata` field. These permissions are typically module-specific (e.g., `hr.employees.view`, `crm.customers.edit`).
+
+* **Storage**: Permissions are stored as a string array inside the `metadata` JSON object on the `TenantMember` model.
+* **Flow**: Permissions are defined during the invitation process and persisted to the member's profile upon invitation acceptance.
+
 ## 🛡️ Implementation
 
 ### Server-Side Protection

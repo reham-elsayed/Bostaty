@@ -21,8 +21,11 @@ export async function inviteMemberAction(
     }
 
     try {
-        const result = await InvitationService.createInvite(tenantId, inviterId, validated.data);
-
+        let result: any;
+        if (inviterId) {
+            result = await InvitationService.createInvite(tenantId, inviterId, validated.data);
+        }
+        console.log(inviterId)
         // Fetch tenant and inviter details for the email
         const tenant = await TenantService.getTenantById(tenantId);
         const inviter = await prisma.user.findUnique({ where: { id: inviterId } });
@@ -56,7 +59,6 @@ export async function inviteMemberAction(
     }
 }
 
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 export async function createAutoTenant(_formData?: FormData) {

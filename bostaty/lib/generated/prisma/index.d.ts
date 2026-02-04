@@ -4601,6 +4601,7 @@ export namespace Prisma {
     role: number
     tenantId: number
     inviterId: number
+    metadata: number
     expiresAt: number
     createdAt: number
     acceptedAt: number
@@ -4639,6 +4640,7 @@ export namespace Prisma {
     role?: true
     tenantId?: true
     inviterId?: true
+    metadata?: true
     expiresAt?: true
     createdAt?: true
     acceptedAt?: true
@@ -4724,6 +4726,7 @@ export namespace Prisma {
     role: $Enums.TenantRole
     tenantId: string
     inviterId: string | null
+    metadata: JsonValue | null
     expiresAt: Date
     createdAt: Date
     acceptedAt: Date | null
@@ -4753,6 +4756,7 @@ export namespace Prisma {
     role?: boolean
     tenantId?: boolean
     inviterId?: boolean
+    metadata?: boolean
     expiresAt?: boolean
     createdAt?: boolean
     acceptedAt?: boolean
@@ -4767,6 +4771,7 @@ export namespace Prisma {
     role?: boolean
     tenantId?: boolean
     inviterId?: boolean
+    metadata?: boolean
     expiresAt?: boolean
     createdAt?: boolean
     acceptedAt?: boolean
@@ -4781,6 +4786,7 @@ export namespace Prisma {
     role?: boolean
     tenantId?: boolean
     inviterId?: boolean
+    metadata?: boolean
     expiresAt?: boolean
     createdAt?: boolean
     acceptedAt?: boolean
@@ -4795,12 +4801,13 @@ export namespace Prisma {
     role?: boolean
     tenantId?: boolean
     inviterId?: boolean
+    metadata?: boolean
     expiresAt?: boolean
     createdAt?: boolean
     acceptedAt?: boolean
   }
 
-  export type TenantInvitationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "token" | "role" | "tenantId" | "inviterId" | "expiresAt" | "createdAt" | "acceptedAt", ExtArgs["result"]["tenantInvitation"]>
+  export type TenantInvitationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "token" | "role" | "tenantId" | "inviterId" | "metadata" | "expiresAt" | "createdAt" | "acceptedAt", ExtArgs["result"]["tenantInvitation"]>
   export type TenantInvitationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     inviter?: boolean | TenantInvitation$inviterArgs<ExtArgs>
@@ -4827,6 +4834,7 @@ export namespace Prisma {
       role: $Enums.TenantRole
       tenantId: string
       inviterId: string | null
+      metadata: Prisma.JsonValue | null
       expiresAt: Date
       createdAt: Date
       acceptedAt: Date | null
@@ -5261,6 +5269,7 @@ export namespace Prisma {
     readonly role: FieldRef<"TenantInvitation", 'TenantRole'>
     readonly tenantId: FieldRef<"TenantInvitation", 'String'>
     readonly inviterId: FieldRef<"TenantInvitation", 'String'>
+    readonly metadata: FieldRef<"TenantInvitation", 'Json'>
     readonly expiresAt: FieldRef<"TenantInvitation", 'DateTime'>
     readonly createdAt: FieldRef<"TenantInvitation", 'DateTime'>
     readonly acceptedAt: FieldRef<"TenantInvitation", 'DateTime'>
@@ -5757,6 +5766,7 @@ export namespace Prisma {
     role: 'role',
     tenantId: 'tenantId',
     inviterId: 'inviterId',
+    metadata: 'metadata',
     expiresAt: 'expiresAt',
     createdAt: 'createdAt',
     acceptedAt: 'acceptedAt'
@@ -6106,6 +6116,7 @@ export namespace Prisma {
     role?: EnumTenantRoleFilter<"TenantInvitation"> | $Enums.TenantRole
     tenantId?: StringFilter<"TenantInvitation"> | string
     inviterId?: UuidNullableFilter<"TenantInvitation"> | string | null
+    metadata?: JsonNullableFilter<"TenantInvitation">
     expiresAt?: DateTimeFilter<"TenantInvitation"> | Date | string
     createdAt?: DateTimeFilter<"TenantInvitation"> | Date | string
     acceptedAt?: DateTimeNullableFilter<"TenantInvitation"> | Date | string | null
@@ -6120,6 +6131,7 @@ export namespace Prisma {
     role?: SortOrder
     tenantId?: SortOrder
     inviterId?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
     expiresAt?: SortOrder
     createdAt?: SortOrder
     acceptedAt?: SortOrderInput | SortOrder
@@ -6138,6 +6150,7 @@ export namespace Prisma {
     role?: EnumTenantRoleFilter<"TenantInvitation"> | $Enums.TenantRole
     tenantId?: StringFilter<"TenantInvitation"> | string
     inviterId?: UuidNullableFilter<"TenantInvitation"> | string | null
+    metadata?: JsonNullableFilter<"TenantInvitation">
     expiresAt?: DateTimeFilter<"TenantInvitation"> | Date | string
     createdAt?: DateTimeFilter<"TenantInvitation"> | Date | string
     acceptedAt?: DateTimeNullableFilter<"TenantInvitation"> | Date | string | null
@@ -6152,6 +6165,7 @@ export namespace Prisma {
     role?: SortOrder
     tenantId?: SortOrder
     inviterId?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
     expiresAt?: SortOrder
     createdAt?: SortOrder
     acceptedAt?: SortOrderInput | SortOrder
@@ -6170,6 +6184,7 @@ export namespace Prisma {
     role?: EnumTenantRoleWithAggregatesFilter<"TenantInvitation"> | $Enums.TenantRole
     tenantId?: StringWithAggregatesFilter<"TenantInvitation"> | string
     inviterId?: UuidNullableWithAggregatesFilter<"TenantInvitation"> | string | null
+    metadata?: JsonNullableWithAggregatesFilter<"TenantInvitation">
     expiresAt?: DateTimeWithAggregatesFilter<"TenantInvitation"> | Date | string
     createdAt?: DateTimeWithAggregatesFilter<"TenantInvitation"> | Date | string
     acceptedAt?: DateTimeNullableWithAggregatesFilter<"TenantInvitation"> | Date | string | null
@@ -6404,6 +6419,7 @@ export namespace Prisma {
     email: string
     token: string
     role?: $Enums.TenantRole
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     expiresAt: Date | string
     createdAt?: Date | string
     acceptedAt?: Date | string | null
@@ -6418,6 +6434,7 @@ export namespace Prisma {
     role?: $Enums.TenantRole
     tenantId: string
     inviterId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     expiresAt: Date | string
     createdAt?: Date | string
     acceptedAt?: Date | string | null
@@ -6428,6 +6445,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
     role?: EnumTenantRoleFieldUpdateOperationsInput | $Enums.TenantRole
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -6442,6 +6460,7 @@ export namespace Prisma {
     role?: EnumTenantRoleFieldUpdateOperationsInput | $Enums.TenantRole
     tenantId?: StringFieldUpdateOperationsInput | string
     inviterId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -6454,6 +6473,7 @@ export namespace Prisma {
     role?: $Enums.TenantRole
     tenantId: string
     inviterId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     expiresAt: Date | string
     createdAt?: Date | string
     acceptedAt?: Date | string | null
@@ -6464,6 +6484,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
     role?: EnumTenantRoleFieldUpdateOperationsInput | $Enums.TenantRole
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -6476,6 +6497,7 @@ export namespace Prisma {
     role?: EnumTenantRoleFieldUpdateOperationsInput | $Enums.TenantRole
     tenantId?: StringFieldUpdateOperationsInput | string
     inviterId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -6850,6 +6872,7 @@ export namespace Prisma {
     role?: SortOrder
     tenantId?: SortOrder
     inviterId?: SortOrder
+    metadata?: SortOrder
     expiresAt?: SortOrder
     createdAt?: SortOrder
     acceptedAt?: SortOrder
@@ -7435,6 +7458,7 @@ export namespace Prisma {
     email: string
     token: string
     role?: $Enums.TenantRole
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     expiresAt: Date | string
     createdAt?: Date | string
     acceptedAt?: Date | string | null
@@ -7447,6 +7471,7 @@ export namespace Prisma {
     token: string
     role?: $Enums.TenantRole
     tenantId: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     expiresAt: Date | string
     createdAt?: Date | string
     acceptedAt?: Date | string | null
@@ -7516,6 +7541,7 @@ export namespace Prisma {
     role?: EnumTenantRoleFilter<"TenantInvitation"> | $Enums.TenantRole
     tenantId?: StringFilter<"TenantInvitation"> | string
     inviterId?: UuidNullableFilter<"TenantInvitation"> | string | null
+    metadata?: JsonNullableFilter<"TenantInvitation">
     expiresAt?: DateTimeFilter<"TenantInvitation"> | Date | string
     createdAt?: DateTimeFilter<"TenantInvitation"> | Date | string
     acceptedAt?: DateTimeNullableFilter<"TenantInvitation"> | Date | string | null
@@ -7552,6 +7578,7 @@ export namespace Prisma {
     email: string
     token: string
     role?: $Enums.TenantRole
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     expiresAt: Date | string
     createdAt?: Date | string
     acceptedAt?: Date | string | null
@@ -7564,6 +7591,7 @@ export namespace Prisma {
     token: string
     role?: $Enums.TenantRole
     inviterId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     expiresAt: Date | string
     createdAt?: Date | string
     acceptedAt?: Date | string | null
@@ -7873,6 +7901,7 @@ export namespace Prisma {
     token: string
     role?: $Enums.TenantRole
     tenantId: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     expiresAt: Date | string
     createdAt?: Date | string
     acceptedAt?: Date | string | null
@@ -7907,6 +7936,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
     role?: EnumTenantRoleFieldUpdateOperationsInput | $Enums.TenantRole
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -7919,6 +7949,7 @@ export namespace Prisma {
     token?: StringFieldUpdateOperationsInput | string
     role?: EnumTenantRoleFieldUpdateOperationsInput | $Enums.TenantRole
     tenantId?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -7930,6 +7961,7 @@ export namespace Prisma {
     token?: StringFieldUpdateOperationsInput | string
     role?: EnumTenantRoleFieldUpdateOperationsInput | $Enums.TenantRole
     tenantId?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -7949,6 +7981,7 @@ export namespace Prisma {
     token: string
     role?: $Enums.TenantRole
     inviterId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     expiresAt: Date | string
     createdAt?: Date | string
     acceptedAt?: Date | string | null
@@ -7983,6 +8016,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
     role?: EnumTenantRoleFieldUpdateOperationsInput | $Enums.TenantRole
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -7995,6 +8029,7 @@ export namespace Prisma {
     token?: StringFieldUpdateOperationsInput | string
     role?: EnumTenantRoleFieldUpdateOperationsInput | $Enums.TenantRole
     inviterId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -8006,6 +8041,7 @@ export namespace Prisma {
     token?: StringFieldUpdateOperationsInput | string
     role?: EnumTenantRoleFieldUpdateOperationsInput | $Enums.TenantRole
     inviterId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

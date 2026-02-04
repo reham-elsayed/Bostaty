@@ -2,12 +2,13 @@ import prisma from '@/lib/prisma'
 import crypto from 'node:crypto'
 import { TenantRole } from '@/types/Roles'
 import { TenantService } from './tenant-service'
+import { InviteMemberDTO } from '../dtos/invitation.dto'
 
 export class InvitationService {
     static async createInvite(
         tenantId: string,
         inviterId: string,
-        data: { email: string; role: TenantRole }
+        data: InviteMemberDTO
     ) {
         // Check inviter permissions
         const inviter = await prisma.tenantMember.findFirst({
@@ -67,6 +68,7 @@ export class InvitationService {
                 role: data.role,
                 tenantId,
                 inviterId,
+                metadata: data.permissions,
                 expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
             },
         })
@@ -111,6 +113,7 @@ export class InvitationService {
                     tenantId: invite.tenantId,
                     userId,
                     role: invite.role,
+                    metadata: (invite.metadata ?? undefined) as any,
                 },
             })
 
@@ -244,7 +247,12 @@ export class InvitationService {
             }
 
             await tx.tenantMember.create({
-                data: { tenantId: invite.tenantId, userId, role: invite.role }
+                data: {
+                    tenantId: invite.tenantId,
+                    userId,
+                    role: invite.role,
+                    metadata: (invite.metadata ?? undefined) as any,
+                }
             })
 
             // Mark as accepted

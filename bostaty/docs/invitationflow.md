@@ -132,11 +132,18 @@ flowchart LR
     InviteSvc -.-> EmailSvc
 ```
 
-**Rules**
 
-* UI components do not access Prisma directly
-* Domain services own business rules
-* Email sending is infrastructure-only
+---
+
+## Invitation Metadata & Granular Permissions
+
+Invitations now support a `metadata` field (JSON) which is used to store granular permissions and other module-specific data.
+
+* **Persistence**: When an invitation is created, module-specific permissions are stored in the `metadata` column of the `TenantInvitation` table.
+* **Transfer**: Upon acceptance (via `acceptInvite` or `acceptInviteById`), this metadata is automatically mapped to the `metadata` field of the new `TenantMember` record.
+* **DTO Standard**: The `InvitationService.createInvite` method now accepts an `InviteMemberDTO`, ensuring type safety for email, role, and permissions.
+
+---
 
 ---
 
