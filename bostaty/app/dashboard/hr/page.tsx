@@ -6,6 +6,8 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { DebugTenant } from "@/components/testing/testing";
 import { ModuleGuard } from "@/components/auth/ModuleGuard";
+import { EmployeeList } from "@/components/Dashboard/HrDashboard/EmployeeList/EmployeeList";
+import { EmployeeForm } from "@/components/Dashboard/HrDashboard/EmployeeForm";
 
 async function ModuleHeader({ title, description }: { title: string; description: string }) {
     const headersTenant = await headers();
@@ -24,7 +26,7 @@ async function ModuleHeader({ title, description }: { title: string; description
             <div>
                 <h1 className="text-3xl font-extrabold tracking-tight">{title}</h1>
                 <p className="text-muted-foreground mt-1">
-                    <DebugTenant />
+
                     {description} for <span className="text-foreground font-semibold uppercase">{tenant?.name}</span>
                 </p>
             </div>
@@ -32,6 +34,7 @@ async function ModuleHeader({ title, description }: { title: string; description
                 <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-full border border-border w-fit">
                     <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
                     <span className="text-xs font-mono font-medium">{tenant?.slug}</span>
+
                 </div>
             </div>
         </header>
@@ -50,18 +53,8 @@ export default async function HRDashboardPage() {
                 </Suspense>
 
                 <div className="mt-8 p-12 border-2 border-dashed border-border rounded-2xl bg-muted/20 flex flex-col items-center justify-center text-center">
-                    <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
-                        <span className="text-3xl">👥</span>
-                    </div>
-                    <h2 className="text-2xl font-bold mb-3 text-foreground">HR Module Under Construction</h2>
-                    <p className="max-w-md text-muted-foreground text-lg">
-                        We're building a comprehensive HR suite to help you manage recruitment, payroll, and employee performance.
-                    </p>
-                    <div className="mt-8 flex gap-4">
-                        <div className="px-4 py-2 bg-background rounded-lg border border-border text-sm font-medium">Recruitment</div>
-                        <div className="px-4 py-2 bg-background rounded-lg border border-border text-sm font-medium">Payroll</div>
-                        <div className="px-4 py-2 bg-background rounded-lg border border-border text-sm font-medium">Performance</div>
-                    </div>
+                    <EmployeeList />
+                    <EmployeeForm />
                 </div>
             </div>
         </ModuleGuard>

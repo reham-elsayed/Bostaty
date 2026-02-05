@@ -163,6 +163,31 @@ exports.Prisma.TenantInvitationScalarFieldEnum = {
   acceptedAt: 'acceptedAt'
 };
 
+exports.Prisma.EmployeeScalarFieldEnum = {
+  id: 'id',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  email: 'email',
+  position: 'position',
+  department: 'department',
+  salary: 'salary',
+  status: 'status',
+  tenantId: 'tenantId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AuditLogScalarFieldEnum = {
+  id: 'id',
+  action: 'action',
+  entity: 'entity',
+  entityId: 'entityId',
+  details: 'details',
+  userId: 'userId',
+  tenantId: 'tenantId',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -198,7 +223,9 @@ exports.Prisma.ModelName = {
   User: 'User',
   Tenant: 'Tenant',
   TenantMember: 'TenantMember',
-  TenantInvitation: 'TenantInvitation'
+  TenantInvitation: 'TenantInvitation',
+  Employee: 'Employee',
+  AuditLog: 'AuditLog'
 };
 
 /**

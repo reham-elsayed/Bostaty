@@ -9,6 +9,8 @@ import { Sidebar } from "@/components/Dashboard/DashboardOwnerNavbar";
 import { AppearanceSettings } from "@/components/Dashboard/AppearanceForm";
 import { getMemberRoleAction, getTenantDataAction } from "./actions";
 import { getAuth } from "@/lib/auth/getTenantId";
+import { SeedEmployeesButton } from "@/components/Dashboard/SeedEmployeesButton";
+
 
 async function DashboardHeader() {
 
@@ -33,6 +35,7 @@ async function DashboardHeader() {
                 </div>
                 {(role === "OWNER" || role === "ADMIN") && (
                     <>
+                        <SeedEmployeesButton />
                         <InviteMemberModal tenantId={tenant?.id as string} inviterId={userId as string} />
 
                         <Suspense fallback={<div className="h-20 animate-pulse bg-muted rounded-xl mb-8" />}>

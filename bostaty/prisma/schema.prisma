@@ -1,7 +1,6 @@
 generator client {
   provider = "prisma-client-js"
   output   = "../lib/generated/prisma"
-  
 }
 
 datasource db {
@@ -23,15 +22,16 @@ enum TenantRole {
 ////////////////////
 
 model User {
-  id        String   @id @default(uuid()) @db.Uuid
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-isSuperAdmin Boolean  @default(false)
+  id           String             @id @default(uuid()) @db.Uuid
+  email        String             @unique
+  name         String?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  isSuperAdmin Boolean            @default(false)
   // Relations
-  memberships TenantMember[]
-  invitations TenantInvitation[] // As inviter
+  memberships  TenantMember[]
+  invitations  TenantInvitation[] // As inviter
+  auditLogs    AuditLog[]
 
   @@map("users")
 }
@@ -41,19 +41,21 @@ isSuperAdmin Boolean  @default(false)
 ////////////////////
 
 model Tenant {
-  id        String   @id @default(uuid())
-  name      String
-  slug      String   @unique
-  subdomain String   @unique
-  plan      String   @default("free")
- settings    Json?    @default("{}")
+  id             String   @id @default(uuid())
+  name           String
+  slug           String   @unique
+  subdomain      String   @unique
+  plan           String   @default("free")
+  settings       Json?    @default("{}")
   enabledModules String[] @default([])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   // Relations
   members     TenantMember[]
   invitations TenantInvitation[]
+  employees   Employee[]
+  auditLogs   AuditLog[]
 
   @@map("tenants")
 }
@@ -83,58 +85,58 @@ model TenantMember {
 ////////////////////
 
 model TenantInvitation {
-  id        String     @id @default(uuid())
-  email     String
-  token     String     @unique
-  role      TenantRole @default(MEMBER)
-  tenantId  String
-  inviterId String?    @db.Uuid
-  metadata  Json?      @default("{}")
-  expiresAt DateTime
-  createdAt DateTime   @default(now())
+  id         String     @id @default(uuid())
+  email      String
+  token      String     @unique
+  role       TenantRole @default(MEMBER)
+  tenantId   String
+  inviterId  String?    @db.Uuid
+  metadata   Json?      @default("{}")
+  expiresAt  DateTime
+  createdAt  DateTime   @default(now())
   acceptedAt DateTime?
   // Relations
-  tenant  Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  inviter User?  @relation(fields: [inviterId], references: [id], onDelete: SetNull)
+  tenant     Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  inviter    User?      @relation(fields: [inviterId], references: [id], onDelete: SetNull)
 
   @@unique([tenantId, email])
   @@map("tenant_invitations")
 }
 
 model Employee {
-  id          String   @id @default(uuid())
-  firstName   String
-  lastName    String
-  email       String
-  position    String
-  department  String
-  salary      Float?   // We'll use this to show "Sensitive Data" permission logic
-  status      String   @default("ACTIVE") // ACTIVE, INACTIVE, ON_LEAVE
-  
-  // Multi-tenancy
-  tenantId    String
-  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  id         String @id @default(uuid())
+  firstName  String
+  lastName   String
+  email      String
+  position   String
+  department String
+  salary     Float? // We'll use this to show "Sensitive Data" permission logic
+  status     String @default("ACTIVE") // ACTIVE, INACTIVE, ON_LEAVE
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  // Multi-tenancy
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([tenantId])
 }
 
 model AuditLog {
-  id        String   @id @default(uuid())
-  action    String   // e.g., "CREATE_EMPLOYEE", "DELETE_USER"
-  entity    String   // e.g., "Employee", "Product"
-  entityId  String?  // The ID of the thing that was changed
-  details   Json?    // Store "before" and "after" states if needed
-  
+  id       String  @id @default(uuid())
+  action   String // e.g., "CREATE_EMPLOYEE", "DELETE_USER"
+  entity   String // e.g., "Employee", "Product"
+  entityId String? // The ID of the thing that was changed
+  details  Json? // Store "before" and "after" states if needed
+
   // Who did it?
-  userId    String   @db.Uuid
-  user      User     @relation(fields: [userId], references: [id])
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id])
 
   // Which tenant?
-  tenantId  String
-  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 

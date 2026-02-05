@@ -21,7 +21,7 @@ export function AppearanceSettings() {
     const { tenantId } = useTenant()
     console.log(tenantId, "tenantId from form")
     async function handleUpdateTheme(data: any) {
-        return await updateTenantSettings(tenantId as string, data);
+        return await updateTenantSettings(data);
     }
     return (
         <Dialog open={open} onOpenChange={setOpen}>

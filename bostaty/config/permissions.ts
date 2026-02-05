@@ -2,6 +2,7 @@ export const MODULE_PERMISSIONS = {
     HR: [
         { key: "hr.employees.view", label: "View Employees" },
         { key: "hr.employees.edit", label: "Edit Employees" },
+        { key: "hr.employees.manage_salary", label: "Manage Salary" },
         { key: "hr.schedule.manage", label: "Manage Schedule" },
     ],
     ECOMMERCE: [
