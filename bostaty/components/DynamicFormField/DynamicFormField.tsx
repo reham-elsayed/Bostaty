@@ -3,6 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { cn } from "@/lib/utils";
 import { FormFieldConfig } from "@/types/form";
 import {
     Form,
@@ -31,9 +32,10 @@ interface DynamicFormProps {
     fields: FormFieldConfig[];
     onSubmit: (data: any) => Promise<any>;
     buttonText?: string;
+    className?: string;
 }
 
-export function DynamicForm({ schema, fields, onSubmit, buttonText = "Submit" }: DynamicFormProps) {
+export function DynamicForm({ schema, fields, onSubmit, buttonText = "Submit", className }: DynamicFormProps) {
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
         defaultValues: fields.reduce((acc, field) => ({
@@ -68,99 +70,112 @@ export function DynamicForm({ schema, fields, onSubmit, buttonText = "Submit" }:
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
-                {fields.map((field) => (
-                    <FormField
-                        key={field.name}
-                        control={form.control}
-                        name={field.name}
-                        render={({ field: formField }) => (
-                            <FormItem className={field.type === "checkbox" ? "flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4" : ""}>
-                                {field.type !== "checkbox" && <FormLabel className="text-sm font-medium">{field.label}</FormLabel>}
-                                <FormControl>
-                                    {(() => {
-                                        switch (field.type) {
-                                            case "text":
-                                            case "email":
-                                                return <Input
-                                                    type={field.inputType || (field.type === "email" ? "email" : "text")}
-                                                    placeholder={field.placeholder}
-                                                    {...formField}
-                                                    value={(formField.value as string) ?? ""}
-                                                />;
-                                            case "textarea":
-                                                return <Textarea
-                                                    placeholder={field.placeholder}
-                                                    {...formField}
-                                                    value={(formField.value as string) ?? ""}
-                                                />;
-                                            case "select":
-                                                return (
-                                                    <Select onValueChange={formField.onChange} defaultValue={formField.value as string}>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder={field.placeholder || "Select option"} />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {field.options?.map(opt => (
-                                                                <SelectItem key={opt.value} value={opt.value}>
-                                                                    {opt.label}
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
-                                                );
-                                            case "multi-select":
-                                                return (
-                                                    <MultipleSelector
-                                                        onChange={(options) => formField.onChange(options.map(o => o.value))}
-                                                        value={field.options?.filter(opt =>
-                                                            (formField.value as string[] || [])?.includes(opt.value)
-                                                        ) || []}
-                                                        commandProps={{
-                                                            label: field.label
-                                                        }}
-                                                        options={field.options}
+                <div className={cn("space-y-4", className)}>
+                    {fields.map((field) => (
+                        <FormField
+                            key={field.name}
+                            control={form.control}
+                            name={field.name}
+                            render={({ field: formField }) => (
+                                <FormItem className={`${field.type === "checkbox" ? "flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4" : ""} ${["textarea", "multi-select"].includes(field.type) ? "md:col-span-2" : ""}`}>
+                                    {field.type !== "checkbox" && <FormLabel className="text-sm font-medium">{field.label}</FormLabel>}
+                                    <FormControl>
+                                        {(() => {
+                                            switch (field.type) {
+                                                case "text":
+                                                case "email":
+                                                    return <Input
+                                                        type={field.inputType || (field.type === "email" ? "email" : "text")}
                                                         placeholder={field.placeholder}
-                                                        disabled={form.formState.isSubmitting}
-                                                        emptyIndicator={<p className='text-center text-sm'>No results found</p>}
-                                                        className='w-full'
-                                                    />
-                                                );
-                                            case "checkbox":
-                                                return (
-                                                    <>
-                                                        <Checkbox
-                                                            checked={formField.value as boolean}
-                                                            onCheckedChange={formField.onChange}
+                                                        {...formField}
+                                                        value={(formField.value as string) ?? ""}
+                                                    />;
+                                                case "textarea":
+                                                    return <Textarea
+                                                        placeholder={field.placeholder}
+                                                        {...formField}
+                                                        value={(formField.value as string) ?? ""}
+                                                    />;
+                                                case "select":
+                                                    return (
+                                                        <Select onValueChange={formField.onChange} defaultValue={formField.value as string}>
+                                                            <SelectTrigger>
+                                                                <SelectValue placeholder={field.placeholder || "Select option"} />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                {field.options?.map(opt => (
+                                                                    <SelectItem key={opt.value} value={opt.value}>
+                                                                        {opt.label}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                    );
+                                                case "multi-select":
+                                                    return (
+                                                        <MultipleSelector
+                                                            onChange={(options) => formField.onChange(options.map(o => o.value))}
+                                                            value={field.options?.filter(opt =>
+                                                                (formField.value as string[] || [])?.includes(opt.value)
+                                                            ) || []}
+                                                            commandProps={{
+                                                                label: field.label
+                                                            }}
+                                                            options={field.options}
+                                                            placeholder={field.placeholder}
+                                                            disabled={form.formState.isSubmitting}
+                                                            emptyIndicator={<p className='text-center text-sm'>No results found</p>}
+                                                            className='w-full'
                                                         />
-                                                        <div className="space-y-1 leading-none">
-                                                            <FormLabel className="text-sm font-medium">
-                                                                {field.label}
-                                                            </FormLabel>
+                                                    );
+                                                case "checkbox":
+                                                    return (
+                                                        <>
+                                                            <Checkbox
+                                                                checked={formField.value as boolean}
+                                                                onCheckedChange={formField.onChange}
+                                                            />
+                                                            <div className="space-y-1 leading-none">
+                                                                <FormLabel className="text-sm font-medium">
+                                                                    {field.label}
+                                                                </FormLabel>
+                                                            </div>
+                                                        </>
+                                                    );
+                                                case "color":
+                                                    return (
+                                                        <div className="flex gap-3 items-center">
+                                                            <Input
+                                                                type="color"
+                                                                {...formField}
+                                                                value={(formField.value as string) ?? ""}
+                                                                className="h-10 w-20 p-1 cursor-pointer"
+                                                            />
+                                                            <span className="text-sm font-mono text-muted-foreground uppercase">{formField.value as string}</span>
                                                         </div>
-                                                    </>
-                                                );
-                                            case "color":
-                                                return (
-                                                    <div className="flex gap-3 items-center">
-                                                        <Input
-                                                            type="color"
-                                                            {...formField}
-                                                            value={(formField.value as string) ?? ""}
-                                                            className="h-10 w-20 p-1 cursor-pointer"
-                                                        />
-                                                        <span className="text-sm font-mono text-muted-foreground uppercase">{formField.value as string}</span>
-                                                    </div>
-                                                );
-                                            default:
-                                                return null;
-                                        }
-                                    })()}
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                ))}
+                                                    );
+                                                case "number":
+                                                    return <Input
+                                                        type="number"
+                                                        placeholder={field.placeholder}
+                                                        {...formField}
+                                                        value={(formField.value as string) ?? ""}
+                                                        onChange={(e) => {
+                                                            const val = e.target.valueAsNumber;
+                                                            formField.onChange(isNaN(val) ? undefined : val);
+                                                        }}
+                                                    />;
+                                                default:
+                                                    return null;
+                                            }
+                                        })()}
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    ))}
+                </div>
 
                 <Button
                     type="submit"

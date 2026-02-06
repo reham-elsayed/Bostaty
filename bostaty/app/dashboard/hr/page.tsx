@@ -54,7 +54,7 @@ export default async function HRDashboardPage() {
 
                 <div className="mt-8 p-12 border-2 border-dashed border-border rounded-2xl bg-muted/20 flex flex-col items-center justify-center text-center">
                     <EmployeeList />
-                    <EmployeeForm />
+
                 </div>
             </div>
         </ModuleGuard>

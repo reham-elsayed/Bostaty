@@ -1,7 +1,7 @@
 "use server"
 
 import { TenantService } from "@/lib/services/tenant-service";
-import { hrServices } from "@/lib/services/hr-services";
+import { HrServices } from "@/lib/services/hr-services";
 import { revalidatePath } from "next/cache";
 import { getAuth } from "@/lib/auth/getTenantId";
 import prisma from "@/lib/prisma";

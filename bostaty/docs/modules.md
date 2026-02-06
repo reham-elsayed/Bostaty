@@ -9,7 +9,7 @@ The system currently supports the following modules:
 | Module ID | Title | Description | Included by Default |
 |-----------|-------|-------------|---------------------|
 | `CORE` | Overview | Basic dashboard and tenant settings. | Yes |
-| `HR` | Employees | Human Resources management (tracking employees). | No |
+| `HR` | Employees | Human Resources management. Features inclusive employee directory, detailed profiles, and dynamic "Add Employee" forms with permission-gated fields (e.g., salary visible only to managers). | No |
 | `ECOMMERCE` | Store Front | E-commerce capabilities for the tenant. | No |
 | `CRM` | Customers | Customer Relationship Management features. | No |
 

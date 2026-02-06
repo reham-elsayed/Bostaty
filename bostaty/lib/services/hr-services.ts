@@ -2,7 +2,7 @@ import { getAuth } from "../auth/getTenantId";
 import prisma from "../prisma";
 import { TenantService } from "./tenant-service";
 
-export class hrServices {
+export class HrServices {
     static async getEmployees() {
         const { tenantId, userId } = await getAuth();
         const role = await TenantService.getMemberRole(tenantId, userId)
@@ -20,6 +20,7 @@ export class hrServices {
                 createdAt: true,
                 updatedAt: true,
                 tenantId: true,
+                status: true,
                 salary: canSeeSalary,
             }
         });

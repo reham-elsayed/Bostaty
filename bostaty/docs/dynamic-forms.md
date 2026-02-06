@@ -51,7 +51,9 @@ const fields: FormFieldConfig[] = [
     // Handle submission (e.g., call a Server Action)
     console.log(data);
   }}
+                                                                                                                                                                                           
   buttonText="Save Profile"
+  className="grid grid-cols-2 gap-4" // Optional: Configurable layout
 />
 ```
 
@@ -60,6 +62,7 @@ const fields: FormFieldConfig[] = [
 | Type | Description |
 |------|-------------|
 | `text` | Standard text input. Supports `inputType` (e.g., "password", "email"). |
+| `number` | Numeric input. Coerces value to number. |
 | `textarea` | Multi-line text area. |
 | `select` | Dropdown menu. Requires `options`. |
 | `checkbox` | Boolean toggle. |

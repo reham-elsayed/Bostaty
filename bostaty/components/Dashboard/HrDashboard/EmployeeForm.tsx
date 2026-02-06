@@ -19,10 +19,15 @@ import { useTenant } from "@/providers/TenantContext";
 
 
 export function EmployeeForm() {
-    const { permissions } = useTenant();
-    const canManageSalary = permissions.includes('hr.employees.manage_salary');
+    const { permissions, role } = useTenant();
     const [open, setOpen] = useState(false);
-    const fields = getEmployeeFormConfig(canManageSalary);
+
+    const can = (permission: string) => {
+        if (role === 'OWNER' || role === 'ADMIN') return true;
+        return permissions?.includes(permission) ?? false;
+    };
+
+    const fields = getEmployeeFormConfig(can);
 
     async function handleCreateEmployee(data: EmployeeDto) {
         const result = await createEmployeeAction(data);
@@ -44,7 +49,7 @@ export function EmployeeForm() {
                     Add Employee
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-2xl">
                 <DialogHeader>
                     <DialogTitle>Add New Employee</DialogTitle>
                 </DialogHeader>
@@ -53,6 +58,7 @@ export function EmployeeForm() {
                     fields={fields}
                     onSubmit={handleCreateEmployee}
                     buttonText="Create Employee"
+                    className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[65vh] overflow-y-auto px-1"
                 />
             </DialogContent>
         </Dialog>

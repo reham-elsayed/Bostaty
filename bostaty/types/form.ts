@@ -8,4 +8,5 @@ export interface FormFieldConfig {
     inputType?: HTMLInputTypeAttribute; // for text, password, email, etc.
     options?: { label: string; value: string }[]; // For selects
     defaultValue?: any;
+    requiredPermission?: string;
 }
