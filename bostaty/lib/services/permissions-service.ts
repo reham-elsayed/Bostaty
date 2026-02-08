@@ -1,4 +1,5 @@
 import { getAuth } from "../auth/getTenantId";
+import { UserPermissionsSchema } from "../dtos/permissions.dto";
 import prisma from "../prisma";
 
 export class PermissionService {
@@ -30,4 +31,61 @@ export class PermissionService {
         });
         return membership
     }
+
+    static async getMemberPermissions(email: string) {
+        const { tenantId } = await getAuth();
+        const member = await prisma.tenantMember.findFirst({
+            where: {
+                tenantId,
+                user: {
+                    email: email
+                }
+            },
+            select: {
+                metadata: true
+            }
+        });
+
+        if (!member) return null;
+
+        const metadata = member.metadata as Record<string, any>;
+        return Array.isArray(metadata.permissions) ? metadata.permissions : [];
+    }
+
+    static async updatePermissions(data: any) {
+        const { userId: currentUserId, tenantId } = await getAuth();
+        const validated = UserPermissionsSchema.safeParse(data);
+
+        if (!validated.success) {
+            return { error: validated.error.issues[0].message };
+        }
+
+        const member = await prisma.tenantMember.findFirst({
+            where: {
+                tenantId,
+                user: {
+                    email: validated.data.email
+                }
+            }
+        });
+
+        if (!member) {
+            return { error: "Member not found" };
+        }
+
+        const updatedMember = await prisma.tenantMember.update({
+            where: {
+                id: member.id
+            },
+            data: {
+                metadata: {
+                    ...(member.metadata as object),
+                    permissions: validated.data.permissions
+                }
+            }
+        });
+
+        return updatedMember;
+    }
+
 }

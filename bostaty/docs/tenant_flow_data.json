@@ -1,0 +1,110 @@
+{
+    "tenant_creation_flows": {
+        "auto_onboarding": {
+            "title": "Automatic Onboarding",
+            "description": "Streamlined setup for users with professional email domains. The system automatically groups users from the same company.",
+            "steps": {
+                "step1": {
+                    "label": "User Login",
+                    "description": "User authenticates via email/password or OAuth provider."
+                },
+                "step2": {
+                    "label": "Domain Analysis",
+                    "description": "System parses the email domain. Public domains (gmail.com, yahoo.com, etc.) are flagged for Manual Setup."
+                },
+                "step3": {
+                    "label": "Tenant Discovery",
+                    "description": "For professional domains, the system checks if a tenant already exists for this domain (e.g., @acme)."
+                },
+                "step4": {
+                    "label": "Join or Create",
+                    "description": "If the tenant exists, the user is added as a MEMBER. If not, a new tenant is created with the user as OWNER."
+                },
+                "step5": {
+                    "label": "Redirection",
+                    "description": "User is automatically redirected to the tenant dashboard."
+                }
+            }
+        },
+        "manual_setup": {
+            "title": "Manual Setup",
+            "description": "Standard flow for personal email users or creating additional workspaces.",
+            "steps": {
+                "step1": {
+                    "label": "Initiation",
+                    "description": "User lands on the tenant selection screen or clicks 'Create Workspace'."
+                },
+                "step2": {
+                    "label": "Data Entry",
+                    "description": "User provides 'Workspace Name', 'Slug' (URL identifier), and 'Subdomain'."
+                },
+                "step3": {
+                    "label": "Validation",
+                    "description": "System validates character requirements and checks for availability of the Slug and Subdomain."
+                },
+                "step4": {
+                    "label": "Provisioning",
+                    "description": "New tenant resource is provisioned in the database with the current user assigned as OWNER."
+                },
+                "step5": {
+                    "label": "Access",
+                    "description": "User is redirected to the newly created workspace."
+                }
+            }
+        }
+    },
+    "modules": {
+        "available_modules": [
+            {
+                "id": "CORE",
+                "title": "Platform Core",
+                "description": "Essential dashboard, settings, and workspace management features.",
+                "is_default": true,
+                "icon": "LayoutDashboard"
+            },
+            {
+                "id": "HR",
+                "title": "Employees (HR)",
+                "description": "Complete HR management with employee directory, profiles, and role-based permissions.",
+                "is_default": false,
+                "icon": "Users"
+            },
+            {
+                "id": "ECOMMERCE",
+                "title": "Store Front",
+                "description": "Digital storefront capabilities for selling products or services.",
+                "is_default": false,
+                "icon": "Store"
+            },
+            {
+                "id": "CRM",
+                "title": "Customers (CRM)",
+                "description": "Customer relationship management to track leads and client interactions.",
+                "is_default": false,
+                "icon": "Contact"
+            }
+        ],
+        "add_module_flow": {
+            "title": "Enabling Modules",
+            "description": "Process for workspace owners to activate additional functionality.",
+            "steps": {
+                "step1": {
+                    "label": "Access Settings",
+                    "description": "Navigate to 'Plan Settings' (/dashboard/plan) from the main sidebar."
+                },
+                "step2": {
+                    "label": "Browse Marketplace",
+                    "description": "View list of available modules with descriptions."
+                },
+                "step3": {
+                    "label": "Activation",
+                    "description": "Toggle the switch for the desired module (e.g., HR, CRM). restricted to OWNER role."
+                },
+                "step4": {
+                    "label": "System Update",
+                    "description": "The application instantly updates permissions and sidebar navigation to include the new module features."
+                }
+            }
+        }
+    }
+}

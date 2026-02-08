@@ -1,3 +1,4 @@
+import { getPermissionFields, permissionsArray } from "@/lib/permissions/permissionsArray";
 import { MODULE_PERMISSIONS } from "./permissions";
 import { FormFieldConfig } from "@/types/form";
 
@@ -16,23 +17,9 @@ export function getInviteFormConfig(enabledModules: string[]): FormFieldConfig[]
         },
     ];
 
-    // 2. Permission field with dynamic options
-    const permissionOptions = enabledModules.flatMap((mod) => {
-        const moduleKey = mod as keyof typeof MODULE_PERMISSIONS;
-        return MODULE_PERMISSIONS[moduleKey]?.map(p => ({
-            label: `${mod}: ${p.label}`,
-            value: p.key
-        })) || [];
-    });
-    console.log(permissionOptions);
-    if (permissionOptions.length > 0) {
-        fields.push({
-            name: "permissions",
-            label: "Granular Permissions",
-            type: "multi-select",
-            options: permissionOptions
-        });
+    const permissionsFields = getPermissionFields(enabledModules)
+    if (permissionsFields.length > 0) {
+        fields.push(...permissionsFields);
     }
-    console.log(fields);
     return fields;
 }

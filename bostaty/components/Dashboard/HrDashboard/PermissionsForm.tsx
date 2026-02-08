@@ -1,11 +1,15 @@
+
 "use client";
 
 import { useState } from "react";
-import { getEmployeeFormConfig } from "@/config/employee-form-config";
-import { DynamicForm } from "@/components/DynamicFormField/DynamicFormField";
-import { EmployeeDto, employeeSchema } from "@/lib/dtos/employee.dto";
+import { Plus } from "lucide-react";
+
+import { getPermissionsFormConfig } from "@/config/permissions-form-config";
+import { UserPermissionsSchema } from "@/lib/dtos/permissions.dto";
+import { useTenant } from "@/providers/TenantContext";
 import { createEmployeeAction } from "@/app/dashboard/hr/actions";
-import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,
@@ -13,31 +17,19 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import { useTenant } from "@/providers/TenantContext";
+import { DynamicForm } from "@/components/DynamicFormField/DynamicFormField";
 
-
-export function EmployeeForm() {
-    const { permissions, role } = useTenant();
+export function PermissionsForm() {
+    const { enabledModules } = useTenant()
     const [open, setOpen] = useState(false);
 
-    const can = (permission: string) => {
-        if (role === 'OWNER' || role === 'ADMIN') return true;
-        return permissions?.includes(permission) ?? false;
-    };
+    const fields = getPermissionsFormConfig(enabledModules)
 
-    const fields = getEmployeeFormConfig(can);
-
-    async function handleCreateEmployee(data: EmployeeDto) {
+    const handleCreateEmployee = async (data: any) => {
         const result = await createEmployeeAction(data);
-        if (result?.error) {
-            toast.error(result.error);
-            return;
+        if (result?.success) {
+            setOpen(false);
         }
-
-        toast.success("Employee created successfully");
-        setOpen(false);
         return result;
     }
 
@@ -54,13 +46,13 @@ export function EmployeeForm() {
                     <DialogTitle>Add New Employee</DialogTitle>
                 </DialogHeader>
                 <DynamicForm
-                    schema={employeeSchema}
+                    schema={UserPermissionsSchema}
                     fields={fields}
                     onSubmit={handleCreateEmployee}
                     buttonText="Create Employee"
-                    className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[65vh] overflow-y-auto px-1"
+                    className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[65vh]  px-1"
                 />
             </DialogContent>
         </Dialog>
-    );
+    )
 }
