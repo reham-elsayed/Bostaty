@@ -48,7 +48,7 @@ export function PlanSettingsForm() {
             newModules.push("CORE");
         }
 
-        return updateTenantModules(tenantId, newModules);
+        return updateTenantModules(newModules);
     };
 
     return (

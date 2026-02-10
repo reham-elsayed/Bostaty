@@ -12,6 +12,7 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
+    FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -84,12 +85,22 @@ export function DynamicForm({ schema, fields, onSubmit, buttonText = "Submit", c
                                             switch (field.type) {
                                                 case "text":
                                                 case "email":
-                                                    return <Input
-                                                        type={field.inputType || (field.type === "email" ? "email" : "text")}
-                                                        placeholder={field.placeholder}
-                                                        {...formField}
-                                                        value={(formField.value as string) ?? ""}
-                                                    />;
+                                                    return (
+                                                        <div className="flex items-center">
+                                                            <Input
+                                                                type={field.inputType || (field.type === "email" ? "email" : "text")}
+                                                                placeholder={field.placeholder}
+                                                                {...formField}
+                                                                value={(formField.value as string) ?? ""}
+                                                                className={field.suffix ? "rounded-r-none" : ""}
+                                                            />
+                                                            {field.suffix && (
+                                                                <span className="border border-l-0 px-3 py-2 bg-gray-50 text-gray-500 rounded-r-md text-sm">
+                                                                    {field.suffix}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    );
                                                 case "textarea":
                                                     return <Textarea
                                                         placeholder={field.placeholder}
@@ -170,6 +181,7 @@ export function DynamicForm({ schema, fields, onSubmit, buttonText = "Submit", c
                                             }
                                         })()}
                                     </FormControl>
+                                    {field.description && <FormDescription>{field.description}</FormDescription>}
                                     <FormMessage />
                                 </FormItem>
                             )}

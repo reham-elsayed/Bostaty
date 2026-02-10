@@ -28,6 +28,17 @@ In addition to static roles, the system supports granular permissions stored in 
 * **Storage**: Permissions are stored as a string array inside the `metadata` JSON object on the `TenantMember` model.
 * **Flow**: Permissions are defined during the invitation process and persisted to the member's profile upon invitation acceptance.
 
+### 🛠️ Managing Member Permissions
+
+Admins and Owners can modify granular permissions for existing members directly from the HR Dashboard:
+
+1.  **Navigate** to the Employee Directory.
+2.  **Click** the "Manage Permissions" option in the actions menu for a specific user.
+3.  **Update** the permissions via the dialog (e.g., toggle `hr.employees.view` or `hr.employees.manage`).
+4.  **Save** changes.
+
+> **Note:** Updates are applied immediately to the `tenant_members` metadata. The `updatePermissions` service ensures that new permissions are merged with existing ones, preserving user access continuity.
+
 ## 🛡️ Implementation
 
 ### Server-Side Protection

@@ -51,7 +51,6 @@ model Tenant {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  // Relations
   members     TenantMember[]
   invitations TenantInvitation[]
   employees   Employee[]
@@ -61,7 +60,7 @@ model Tenant {
 }
 
 ////////////////////
-// TENANT MEMBERS (JOIN TABLE)
+// TENANT MEMBERS 
 ////////////////////
 
 model TenantMember {
@@ -72,7 +71,6 @@ model TenantMember {
   metadata  Json?      @default("{}")
   createdAt DateTime   @default(now())
 
-  // Relations
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
@@ -95,7 +93,7 @@ model TenantInvitation {
   expiresAt  DateTime
   createdAt  DateTime   @default(now())
   acceptedAt DateTime?
-  // Relations
+
   tenant     Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   inviter    User?      @relation(fields: [inviterId], references: [id], onDelete: SetNull)
 
@@ -103,6 +101,9 @@ model TenantInvitation {
   @@map("tenant_invitations")
 }
 
+//////////////////
+// EMPLOYEES
+//////////////////
 model Employee {
   id         String @id @default(uuid())
   firstName  String
@@ -110,8 +111,8 @@ model Employee {
   email      String
   position   String
   department String
-  salary     Float? // We'll use this to show "Sensitive Data" permission logic
-  status     String @default("ACTIVE") // ACTIVE, INACTIVE, ON_LEAVE
+  salary     Float? 
+  status     String @default("ACTIVE") 
 
   // Multi-tenancy
   tenantId String
@@ -123,18 +124,22 @@ model Employee {
   @@index([tenantId])
 }
 
+
+//////////////////
+// AUDIT LOGS
+//////////////////
 model AuditLog {
   id       String  @id @default(uuid())
-  action   String // e.g., "CREATE_EMPLOYEE", "DELETE_USER"
-  entity   String // e.g., "Employee", "Product"
-  entityId String? // The ID of the thing that was changed
-  details  Json? // Store "before" and "after" states if needed
+  action   String 
+  entity   String 
+  entityId String? 
+  details  Json? 
 
-  // Who did it?
+
   userId String @db.Uuid
   user   User   @relation(fields: [userId], references: [id])
 
-  // Which tenant?
+  
   tenantId String
   tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 

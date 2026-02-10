@@ -17,8 +17,6 @@ export async function proxy(request: NextRequest) {
       path => request.nextUrl.pathname.startsWith(path)
     );
 
-    // 1. If on an ignored path, just return the session-updated response immediately.
-    // This stops the middleware from trying to find a tenant where one might not exist yet.
     if (isIgnoredPath) {
       console.log(`Proxy: Ignored path ${request.nextUrl.pathname}, passing through.`);
       return response;
@@ -34,13 +32,10 @@ export async function proxy(request: NextRequest) {
       }
 
       console.log("result", result)
-      // 2. If user is logged in but has no tenant membership
       if (!result) {
         console.log(`Proxy: User ${userId} has no tenant token, redirecting to /workspace from ${request.nextUrl.pathname}`);
         return NextResponse.redirect(new URL("/workspace", request.url));
       }
-
-      // 3. User has a tenant -> Inject Headers
       const newHeaders = new Headers(request.headers);
       newHeaders.set('x-tenant-id', result.tenantId);
       newHeaders.set('x-app-token', result.token);
@@ -49,7 +44,6 @@ export async function proxy(request: NextRequest) {
         request: { headers: newHeaders },
       });
 
-      // 4. Sync Cookies (including Supabase session cookies)
       finalResponse.cookies.set(TENANT_CACHE_COOKIE, result.token, {
         maxAge: 3600,
         path: "/",
@@ -58,13 +52,11 @@ export async function proxy(request: NextRequest) {
         secure: process.env.NODE_ENV === "production",
       });
 
-      // Sync all cookies from the updateSession response
       response.cookies.getAll().forEach((c) => finalResponse.cookies.set(c.name, c.value, c));
 
       return finalResponse;
     }
 
-    // 5. No user logged in? Let the page/auth-guard handle it.
     return response;
   } catch (error) {
     console.error("Middleware Error:", error);

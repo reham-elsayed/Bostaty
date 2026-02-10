@@ -65,7 +65,7 @@
             {
                 "id": "HR",
                 "title": "Employees (HR)",
-                "description": "Complete HR management with employee directory, profiles, and role-based permissions.",
+                "description": "Complete HR management with employee directory, profiles, role-based permissions, and advanced dashboard statistics.",
                 "is_default": false,
                 "icon": "Users"
             },
