@@ -69,9 +69,9 @@ export function FeatureShowcase() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.5, delay: index * 0.1 }}
-                            className="relative group p-8 bg-white dark:bg-zinc-900 rounded-2xl border border-gray-100 dark:border-zinc-800 shadow-sm hover:shadow-xl transition-all duration-300"
+                            className="relative group p-8 rounded-2xl border border-gray-100 dark:border-zinc-800 shadow-sm hover:shadow-xl transition-all duration-300"
                         >
-                            <div className={`inline-flex p-3 rounded-lg mb-4 ${feature.bg} ${feature.color}`}>
+                            <div className={`inline-flex p-3 rounded-lg mb-4 ${feature.color}`}>
                                 <feature.icon className="h-6 w-6" aria-hidden="true" />
                             </div>
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-primary transition-colors">

@@ -1,7 +1,7 @@
 'use client'
 
 import { DynamicForm } from "@/components/DynamicFormField/DynamicFormField";
-import { updateTenantSettings } from "@/app/dashboard/actions";
+import { updateTenantSettings } from "@/app/(main)/dashboard/actions";
 import { appearanceSchema, fields } from "@/config/settings/AppearanceSettings";
 import { useTenant } from "@/providers/TenantContext";
 

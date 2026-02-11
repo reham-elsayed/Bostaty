@@ -5,6 +5,7 @@ import Navbar from "@/components/navbar";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner"
 import { BreadcrumbComponent } from "@/components/Breadcrumbs/Breadcrumbs";
+import { Suspense } from "react";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -12,8 +13,8 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: "Multitenant",
+  description: "All your work in one place",
 };
 
 const geistSans = Geist({
@@ -36,8 +37,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Navbar />
-          <BreadcrumbComponent />
+          <Suspense fallback={<div className="h-10 w-full bg-gray-100"></div>}>
+            <Navbar />
+          </Suspense>
           {children}
         </ThemeProvider>
         <Toaster richColors />

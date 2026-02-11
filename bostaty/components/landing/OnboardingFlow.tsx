@@ -29,7 +29,7 @@ const steps = [
 
 export function OnboardingFlow() {
     return (
-        <section className="py-24 bg-gray-50 dark:bg-zinc-900/50">
+        <section className="py-24">
             <div className="container px-4 md:px-6">
                 <div className="mx-auto max-w-2xl text-center mb-16">
                     <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
@@ -63,11 +63,11 @@ export function OnboardingFlow() {
                                 </p>
                             </div>
                             <div className="flex-1 w-full relative group">
-                                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-                                <div className={`relative aspect-video rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 shadow-2xl ${step.imagePlaceholder} flex items-center justify-center`}>
+                                <div className="absolute -inset-1 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                                <div className={`relative aspect-video rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 shadow-2xl flex items-center justify-center`}>
                                     {/* Placeholder for Screenshot */}
                                     <div className="text-center p-8">
-                                        <div className="w-16 h-16 mx-auto mb-4 rounded-lg bg-white/50 dark:bg-black/20 flex items-center justify-center backdrop-blur-sm">
+                                        <div className="w-16 h-16 mx-auto mb-4 rounded-lg flex items-center justify-center backdrop-blur-sm">
                                             <span className="text-2xl">📸</span>
                                         </div>
                                         <p className="font-medium text-gray-500 dark:text-gray-400">

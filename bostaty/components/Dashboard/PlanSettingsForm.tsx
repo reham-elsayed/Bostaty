@@ -1,7 +1,7 @@
 "use client";
 
 import { useTenant } from "@/providers/TenantContext";
-import { updateTenantModules } from "@/app/dashboard/actions";
+import { updateTenantModules } from "@/app/(main)/dashboard/actions";
 import { DynamicForm } from "../DynamicFormField/DynamicFormField";
 import { z } from "zod";
 import { FormFieldConfig } from "@/types/form";

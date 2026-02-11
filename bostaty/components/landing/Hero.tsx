@@ -8,7 +8,7 @@ import { ArrowRight } from "lucide-react";
 export function Hero() {
     return (
         <section className="relative overflow-hidden py-20 sm:py-32 lg:pb-32 xl:pb-36">
-            <div className="container px-4 md:px-6 relative z-10">
+            <div className="container mx-auto px-4 md:px-6 relative z-10">
                 <div className="mx-auto max-w-4xl text-center">
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
@@ -47,11 +47,7 @@ export function Hero() {
                 </div>
 
                 {/* Abstract Background Shapes */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 w-[800px] h-[800px] opacity-30 dark:opacity-20 pointer-events-none">
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
-                    <div className="absolute top-0 left-0 w-96 h-96 bg-yellow-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
-                    <div className="absolute -bottom-8 left-20 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
-                </div>
+                {/* Abstract Background Shapes Removed */}
             </div>
         </section>
     );

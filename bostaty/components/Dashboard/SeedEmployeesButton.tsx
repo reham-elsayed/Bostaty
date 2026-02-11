@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { seedEmployeesAction } from "@/app/dashboard/actions";
+import { seedEmployeesAction } from "@/app/(main)/dashboard/actions";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { Sprout } from "lucide-react";
