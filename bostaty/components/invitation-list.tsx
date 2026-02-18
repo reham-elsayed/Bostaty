@@ -1,5 +1,5 @@
 import { InvitationService } from "@/lib/services/invitation-services";
-import { InvitationListClient } from "./InvitationListClient";
+import { InvitationListClient, type Invitation } from "./InvitationListClient";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { UserPlus, Mail } from "lucide-react";
 
@@ -8,7 +8,7 @@ interface InvitationListProps {
 }
 
 export async function InvitationList({ userEmail }: InvitationListProps) {
-    const invites = await InvitationService.getUserInvitations(userEmail);
+    const invites = await InvitationService.getUserInvitations(userEmail) as Invitation[];
 
     if (!invites || invites.length === 0) {
         return (
@@ -37,7 +37,7 @@ export async function InvitationList({ userEmail }: InvitationListProps) {
     return (
         <div className="space-y-4 mb-8">
             <h3 className="text-lg font-medium">Pending Invitations</h3>
-            <InvitationListClient userEmail={userEmail} invites={invites as any} />
+            <InvitationListClient invites={invites} />
         </div>
     );
 }
