@@ -7,7 +7,7 @@ import { Plus } from "lucide-react";
 import { getPermissionsFormConfig } from "@/config/permissions-form-config";
 import { UserPermissionsSchema } from "@/lib/dtos/permissions.dto";
 import { useTenant } from "@/providers/TenantContext";
-import { createEmployeeAction } from "@/app/dashboard/hr/actions";
+import { createEmployeeAction } from "@/app/(main)/dashboard/hr/actions";
 
 import { Button } from "@/components/ui/button";
 import {

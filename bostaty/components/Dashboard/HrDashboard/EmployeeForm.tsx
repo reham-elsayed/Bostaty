@@ -4,7 +4,7 @@ import { useState } from "react";
 import { getEmployeeFormConfig } from "@/config/employee-form-config";
 import { DynamicForm } from "@/components/DynamicFormField/DynamicFormField";
 import { EmployeeDto, employeeSchema } from "@/lib/dtos/employee.dto";
-import { createEmployeeAction } from "@/app/dashboard/hr/actions";
+import { createEmployeeAction } from "@/app/(main)/dashboard/hr/actions";
 import { toast } from "sonner";
 import {
     Dialog,

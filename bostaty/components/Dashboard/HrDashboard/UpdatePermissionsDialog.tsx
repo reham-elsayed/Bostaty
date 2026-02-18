@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { UserPermissionsSchema } from "@/lib/dtos/permissions.dto";
 import { getPermissionsFormConfig } from "@/config/permissions-form-config";
 import { DynamicForm } from "@/components/DynamicFormField/DynamicFormField";
-import { getMemberPermissionsAction, updateMemberPermissionsAction } from "@/app/dashboard/hr/actions";
+import { getMemberPermissionsAction, updateMemberPermissionsAction } from "@/app/(main)/dashboard/hr/actions";
 import { toast } from "sonner";
 import {
     Dialog,
@@ -47,7 +47,7 @@ export function UpdatePermissionsDialog({
             } else {
                 toast.error(result.error || "Failed to fetch permissions");
             }
-        } catch (error) {
+        } catch {
             toast.error("An unexpected error occurred while fetching permissions.");
         } finally {
             setIsLoading(false);

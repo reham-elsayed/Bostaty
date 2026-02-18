@@ -23,7 +23,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { deleteEmployeeAction } from "@/app/dashboard/hr/actions";
+import { deleteEmployeeAction } from "@/app/(main)/dashboard/hr/actions";
 import { toast } from "sonner";
 
 interface EmployeeActionsProps {
@@ -123,7 +123,7 @@ export function EmployeeActions({ employee, enabledModules }: EmployeeActionsPro
                         <AlertDialogDescription>
                             This action cannot be undone. This will permanently delete
                             <span className="font-medium text-foreground"> {employee.firstName} {employee.lastName}</span>
-                            's employee record.
+                            &apos;s employee record.
                             {employee.isMember && (
                                 <span className="block mt-2 text-destructive font-medium">
                                     This will also remove their access to the application.
