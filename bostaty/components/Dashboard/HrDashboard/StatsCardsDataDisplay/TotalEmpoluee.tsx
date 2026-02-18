@@ -1,6 +1,6 @@
-import { StatCard } from "@/app/dashboard/hr/page";
+import { StatCard } from "@/components/Dashboard/HrDashboard/StatCard";
 import { HrServices } from "@/lib/services/hr-services";
-import { Users, Briefcase, UserCheck, Shield } from "lucide-react";
+import { Users } from "lucide-react";
 export async function TotalEmpoluee() {
 
     const employees = await HrServices.getEmployees();

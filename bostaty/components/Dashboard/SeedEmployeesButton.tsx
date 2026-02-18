@@ -22,7 +22,7 @@ export function SeedEmployeesButton() {
                 if (result.success) {
                     toast.success(result.message);
                 }
-            } catch (error) {
+            } catch {
                 toast.error("Something went wrong. Please try again.");
             }
         });

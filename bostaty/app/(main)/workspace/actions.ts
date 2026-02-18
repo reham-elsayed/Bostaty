@@ -12,15 +12,15 @@ export async function acceptInviteAction(inviteId: string, userEmail: string) {
 
     // 1. Get user from Supabase Auth
     const { data: { user }, error } = await supabase.auth.getUser();
-    if (!user) {
-        return { error: "User not found" }
+    if (error || !user) {
+        return { error: error?.message || "User not found" }
     }
     try {
         await InvitationService.acceptInviteById(inviteId, userEmail, user?.id as string)
         revalidatePath('/workspaces') // Refresh the list
         return { success: true }
     } catch (err) {
-        return { error: err.message }
+        return { error: err instanceof Error ? err.message : "An unknown error occurred" }
     }
 }
 export async function getSelectedTenant(tenant) {
@@ -35,7 +35,7 @@ export async function getSelectedTenant(tenant) {
         const headerList = await headers();
         const cookieHeader = headerList.get('cookie') || '';
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/token`, {
+        const response = await fetch(`https://${process.env.NEXT_PUBLIC_VERCEL_URL || 'http://localhost:3000'}/token`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -79,7 +79,7 @@ export async function getSelectedTenant(tenant) {
 
     } catch (err) {
         console.error("Error in getSelectedTenant:", err);
-        return { error: err.message }
+        return { error: err instanceof Error ? err.message : "An unknown error occurred" }
     }
 
     // Redirect must be outside try-catch

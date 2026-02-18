@@ -6,9 +6,10 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { ModuleGuard } from "@/components/auth/ModuleGuard";
 import { EmployeeList } from "@/components/Dashboard/HrDashboard/EmployeeList/EmployeeList";
-import { Users, Briefcase, UserCheck, Shield } from "lucide-react";
+import { Briefcase,  Shield } from "lucide-react";
 import { TotalEmpoluee } from "@/components/Dashboard/HrDashboard/StatsCardsDataDisplay/TotalEmpoluee";
 import { ActiveMembers } from "@/components/Dashboard/HrDashboard/StatsCardsDataDisplay/ActiveMembers";
+import { StatCard } from "@/components/Dashboard/HrDashboard/StatCard";
 
 async function ModuleHeader({ title, description }: { title: string; description: string }) {
     const headersTenant = await headers();
@@ -49,21 +50,6 @@ async function ModuleHeader({ title, description }: { title: string; description
     );
 }
 
-export function StatCard({ label, value, icon: Icon, colorClass }: { label: string; value: string; icon: any; colorClass: string }) {
-    return (
-        <div className="bg-card border border-border/50 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-                <div className={`p-3 rounded-xl ${colorClass}`}>
-                    <Icon className="w-6 h-6" />
-                </div>
-            </div>
-            <div className="space-y-1">
-                <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{label}</p>
-                <p className="text-3xl font-bold text-foreground">{value}</p>
-            </div>
-        </div>
-    );
-}
 
 export default async function HRDashboardPage() {
     return (
