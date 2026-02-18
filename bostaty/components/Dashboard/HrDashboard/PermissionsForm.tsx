@@ -5,8 +5,8 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 
 import { z } from "zod";
-import { getPermissionsFormConfig } from "@/config/permissions-form-config";
-import { UserPermissionsSchema } from "@/lib/dtos/permissions.dto";
+import { getEmployeeFormConfig } from "@/config/employee-form-config";
+import { employeeSchema } from "@/lib/dtos/employee.dto";
 import { useTenant } from "@/providers/TenantContext";
 import { createEmployeeAction } from "@/app/(main)/dashboard/hr/actions";
 
@@ -21,12 +21,13 @@ import {
 import { DynamicForm } from "@/components/DynamicFormField/DynamicFormField";
 
 export function PermissionsForm() {
-    const { enabledModules } = useTenant()
+    const { permissions } = useTenant()
     const [open, setOpen] = useState(false);
 
-    const fields = getPermissionsFormConfig(enabledModules)
+    const hasPermission = (permission: string) => permissions.includes(permission)
+    const fields = getEmployeeFormConfig(hasPermission)
 
-    const handleCreateEmployee = async (data: z.infer<typeof UserPermissionsSchema>) => {
+    const handleCreateEmployee = async (data: z.infer<typeof employeeSchema>) => {
         const result = await createEmployeeAction(data);
         if (result?.success) {
             setOpen(false);
@@ -47,7 +48,7 @@ export function PermissionsForm() {
                     <DialogTitle>Add New Employee</DialogTitle>
                 </DialogHeader>
                 <DynamicForm
-                    schema={UserPermissionsSchema}
+                    schema={employeeSchema}
                     fields={fields}
                     onSubmit={handleCreateEmployee}
                     buttonText="Create Employee"
