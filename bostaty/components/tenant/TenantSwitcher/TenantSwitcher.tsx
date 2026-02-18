@@ -11,14 +11,8 @@ import {
 import { Button } from "@/components/ui/button"
 import { ChevronDown } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { Tenant } from "@/types/TenantTypes"
 
-interface Tenant {
-    id: string
-    name: string
-    slug: string
-    subdomain: string
-    members: { role: string }[]
-}
 
 export function TenantSwitcher() {
     const [tenants, setTenants] = useState<Tenant[]>([])
@@ -92,8 +86,9 @@ export function TenantSwitcher() {
                         <div className="flex flex-col">
                             <span>{tenant.name}</span>
                             <span className="text-xs text-gray-500">
-                                {tenant.members[0]?.role.toLowerCase()}
+                                {tenant.members?.[0]?.role.toLowerCase()}
                             </span>
+
                         </div>
                     </DropdownMenuItem>
                 ))}

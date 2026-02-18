@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation";
 import { cookies, headers } from "next/headers";
+import { Tenant } from "@/types/TenantTypes";
+
 
 export async function acceptInviteAction(inviteId: string, userEmail: string) {
     const supabase = await createClient();
@@ -23,7 +25,7 @@ export async function acceptInviteAction(inviteId: string, userEmail: string) {
         return { error: err instanceof Error ? err.message : "An unknown error occurred" }
     }
 }
-export async function getSelectedTenant(tenant) {
+export async function getSelectedTenant(tenant: Tenant) {
     console.log("getSelectedTenant started for tenant:", tenant.id);
     const supabase = await createClient();
     const { data } = await supabase.auth.getUser()

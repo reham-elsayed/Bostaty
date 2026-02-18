@@ -10,15 +10,9 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { ArrowRight, Building2 } from "lucide-react";
+import { Tenant } from "@/types/TenantTypes";
 import { useState } from "react";
 
-export interface Tenant {
-    id: string;
-    name: string;
-    slug: string;
-    subdomain: string;
-    members?: { role: string }[];
-}
 
 interface TenantListClientProps {
     tenants: Tenant[];

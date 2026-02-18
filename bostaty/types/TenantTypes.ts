@@ -1,8 +1,12 @@
+export interface Tenant {
+    id: string;
+    name: string;
+    slug: string;
+    subdomain: string;
+    members?: { role: string }[];
+}
+
 export type TenantState = {
     error?: string;
-    tenant?: {
-        id: string;
-        slug: string;
-        // other fields as needed
-    } | null;
+    tenant?: Tenant | null;
 }
