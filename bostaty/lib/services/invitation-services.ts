@@ -1,3 +1,4 @@
+import { Prisma } from '@/lib/generated/prisma'
 import prisma from '@/lib/prisma'
 import crypto from 'node:crypto'
 import { TenantRole } from '@/types/Roles'
@@ -113,7 +114,7 @@ export class InvitationService {
                     tenantId: invite.tenantId,
                     userId,
                     role: invite.role,
-                    metadata: (invite.metadata ?? undefined) as any,
+                    metadata: (invite.metadata ?? undefined) as Prisma.InputJsonValue,
                 },
             })
 
@@ -251,7 +252,7 @@ export class InvitationService {
                     tenantId: invite.tenantId,
                     userId,
                     role: invite.role,
-                    metadata: (invite.metadata ?? undefined) as any,
+                    metadata: (invite.metadata ?? undefined) as Prisma.InputJsonValue,
                 }
             })
 

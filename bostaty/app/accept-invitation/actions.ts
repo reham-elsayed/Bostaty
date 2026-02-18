@@ -1,6 +1,5 @@
 'use server'
 
-import prisma from '@/lib/prisma'
 import { InvitationService } from '@/lib/services/invitation-services'
 import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
@@ -32,9 +31,9 @@ export async function acceptInvitationAction(token: string) {
                 cookieStore.delete("pending_invite_token")
                 // Success! Redirect them to their new workspace
                 redirect('/workspace')
-            } catch (acceptError: any) {
+            } catch (acceptError: unknown) {
                 // If they are already a member, just send them to workspace
-                if (acceptError.message?.includes("already a member")) {
+                if (acceptError instanceof Error && acceptError.message?.includes("already a member")) {
                     redirect('/workspace')
                 }
                 throw acceptError
@@ -43,10 +42,10 @@ export async function acceptInvitationAction(token: string) {
 
         // Guest user: just return the invitation metadata so the page can render
         return { success: true, invitation, requiresLogin: true }
-    } catch (error: any) {
-        if (error.message === 'NEXT_REDIRECT') throw error; // Allow Next.js redirects to work
+    } catch (error: unknown) {
+        if (error instanceof Error && error.message === 'NEXT_REDIRECT') throw error; // Allow Next.js redirects to work
         return {
-            error: error.message || "Failed to accept invitation"
+            error: (error instanceof Error ? error.message : String(error)) || "Failed to accept invitation"
         }
     }
 }
@@ -70,12 +69,13 @@ export async function completePendingInvitationAction() {
         cookieStore.delete("pending_invite_token")
 
         return { success: true, message: "Invitation accepted successfully" }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error completing pending invitation:", error)
+        const errorMessage = error instanceof Error ? error.message : String(error);
         // Optionally clear the cookie if the token is invalid/expired anyway
-        if (error.message === 'Invalid or expired invitation') {
+        if (errorMessage === 'Invalid or expired invitation') {
             cookieStore.delete("pending_invite_token")
         }
-        return { success: false, error: error.message }
+        return { success: false, error: errorMessage }
     }
 }

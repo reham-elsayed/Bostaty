@@ -52,7 +52,7 @@ export async function WorkspaceContent() {
                             </div>
                             <CardTitle className="text-2xl">Need a new workspace?</CardTitle>
                             <CardDescription className="text-base max-w-md mx-auto">
-                                Get started quickly with your organization's domain or set up a custom workspace manually.
+                                Get started quickly with your organization&apos;s domain or set up a custom workspace manually.
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-6 pb-8">

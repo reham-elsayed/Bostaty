@@ -33,7 +33,7 @@ export async function TenantList({ userId }: TenantListProps) {
     return (
         <div className="space-y-4 mb-8">
             <h3 className="text-lg font-medium">Your Workspaces</h3>
-            <TenantListClient tenants={tenants} />
+            <TenantListClient  tenants={tenants} />
         </div>
     );
 }
