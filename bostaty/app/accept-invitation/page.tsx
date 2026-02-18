@@ -4,7 +4,18 @@ import { InvitationService } from "@/lib/services/invitation-services";
 import { Suspense } from "react";
 
 
-async function InvitationContent({ token }: { token: string }) {
+async function InvitationContent({ 
+    searchParamsPromise 
+}: { 
+    searchParamsPromise: Promise<{ [key: string]: string | string[] | undefined }> 
+}) {
+    const searchParams = await searchParamsPromise;
+    const token = typeof searchParams.token === 'string' ? searchParams.token : undefined;
+
+    if (!token) {
+        redirect("/404");
+    }
+
     // 1. Verify token
     const invitation = await InvitationService.getInvitationMetadata(token);
 
@@ -33,17 +44,14 @@ async function InvitationContent({ token }: { token: string }) {
     );
 }
 
-export default async function AcceptInvitationPage({
+export default function AcceptInvitationPage({
     searchParams,
 }: {
-    searchParams: Promise<{ token?: string }>;
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-    const token = (await searchParams).token;
-    if (!token) redirect("/404");
-
     return (
         <Suspense fallback={<div className="flex items-center justify-center min-h-[400px]">Loading invitation...</div>}>
-            <InvitationContent token={token} />
+            <InvitationContent searchParamsPromise={searchParams} />
         </Suspense>
     );
 }
