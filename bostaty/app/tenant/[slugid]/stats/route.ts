@@ -3,8 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 // app/api/tenants/[id]/stats/route.ts
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ slugid: string }> }
 ) {
+    const { slugid } = await params;
     // Implementation for dashboard stats
     return NextResponse.json({
         totalMembers: 12,
