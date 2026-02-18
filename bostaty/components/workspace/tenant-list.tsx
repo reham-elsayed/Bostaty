@@ -2,13 +2,14 @@ import { TenantService } from "@/lib/services/tenant-service";
 import { TenantListClient } from "./TenantListClient";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Building2 } from "lucide-react";
+import { Tenant } from "@/types/TenantTypes";
 
 interface TenantListProps {
     userId: string;
 }
 
 export async function TenantList({ userId }: TenantListProps) {
-    const tenants = await TenantService.getUserTenants(userId);
+    const tenants = await TenantService.getUserTenants(userId) as unknown as Tenant[];
 
     if (!tenants || tenants.length === 0) {
         return (
@@ -32,7 +33,7 @@ export async function TenantList({ userId }: TenantListProps) {
     return (
         <div className="space-y-4 mb-8">
             <h3 className="text-lg font-medium">Your Workspaces</h3>
-            <TenantListClient userId={userId} tenants={tenants as any} />
+            <TenantListClient tenants={tenants} />
         </div>
     );
 }
