@@ -4,13 +4,15 @@ import { getAuth } from "@/lib/auth/getTenantId";
 import { HrServices } from "@/lib/services/hr-services";
 import { PermissionService } from "@/lib/services/permissions-service";
 import { revalidatePath } from "next/cache";
+import { EmployeeDto } from "@/lib/dtos/employee.dto";
+import { UserPermissionsDto } from "@/lib/dtos/permissions.dto";
 
 export async function canEmployeeDo(userId: string, tenantId: string, permission: string) {
 
     return await PermissionService.can(userId, tenantId, permission);
 }
 
-export async function createEmployeeAction(data: any) {
+export async function createEmployeeAction(data: EmployeeDto) {
     try {
         const { employeeSchema } = await import("@/lib/dtos/employee.dto");
 
@@ -54,7 +56,7 @@ export async function getMemberPermissionsAction(email: string) {
     }
 }
 
-export async function updateMemberPermissionsAction(data: any) {
+export async function updateMemberPermissionsAction(data: UserPermissionsDto) {
     try {
         const result = await PermissionService.updatePermissions(data);
         if ('error' in result) return result;

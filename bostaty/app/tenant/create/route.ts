@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { TenantService } from "@/lib/services/tenant-service"
 import { createClient } from "@/lib/supabase/server"
-import { cookies } from "next/headers"
 
 
 
@@ -10,7 +9,7 @@ export async function POST(request: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-        return { error: "Not authenticated" };
+        return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
     try {
 
@@ -22,9 +21,10 @@ export async function POST(request: NextRequest) {
         })
 
         return NextResponse.json(tenant)
-    } catch (error: any) {
+    } catch (error) {
+        const message = error instanceof Error ? error.message : "Failed to create tenant";
         return NextResponse.json(
-            { error: error.message || "Failed to create tenant" },
+            { error: message },
             { status: 500 }
         )
     }

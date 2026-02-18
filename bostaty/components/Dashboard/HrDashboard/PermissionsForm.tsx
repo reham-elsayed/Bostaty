@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 
+import { z } from "zod";
 import { getPermissionsFormConfig } from "@/config/permissions-form-config";
 import { UserPermissionsSchema } from "@/lib/dtos/permissions.dto";
 import { useTenant } from "@/providers/TenantContext";
@@ -25,7 +26,7 @@ export function PermissionsForm() {
 
     const fields = getPermissionsFormConfig(enabledModules)
 
-    const handleCreateEmployee = async (data: any) => {
+    const handleCreateEmployee = async (data: z.infer<typeof UserPermissionsSchema>) => {
         const result = await createEmployeeAction(data);
         if (result?.success) {
             setOpen(false);

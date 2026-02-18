@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { z } from "zod";
 import { UserPermissionsSchema } from "@/lib/dtos/permissions.dto";
 import { getPermissionsFormConfig } from "@/config/permissions-form-config";
 import { DynamicForm } from "@/components/DynamicFormField/DynamicFormField";
@@ -64,7 +65,7 @@ export function UpdatePermissionsDialog({
         return field;
     });
 
-    async function handleUpdatePermissions(data: any) {
+    async function handleUpdatePermissions(data: z.infer<typeof UserPermissionsSchema>) {
         // Ensure email is included even if field is disabled
         const submissionData = { ...data, email };
         const result = await updateMemberPermissionsAction(submissionData);
