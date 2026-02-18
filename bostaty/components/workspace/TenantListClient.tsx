@@ -1,6 +1,6 @@
 "use client";
 
-import { getSelectedTenant } from "@/app/workspace/actions";
+import { getSelectedTenant } from "@/app/(main)/workspace/actions";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -21,11 +21,10 @@ export interface Tenant {
 }
 
 interface TenantListClientProps {
-    userId: string;
     tenants: Tenant[];
 }
 
-export function TenantListClient({ userId, tenants }: TenantListClientProps) {
+export function TenantListClient({ tenants }: TenantListClientProps) {
     const [isSelecting, setIsSelecting] = useState<string | null>(null);
 
     async function handleTenantSelection(tenant: Tenant) {

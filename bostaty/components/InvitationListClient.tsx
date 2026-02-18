@@ -1,6 +1,6 @@
 "use client";
 
-import { acceptInviteAction } from "@/app/workspace/actions";
+import { acceptInviteAction } from "@/app/(main)/workspace/actions";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -29,11 +29,10 @@ export interface Invitation {
 }
 
 interface InvitationListClientProps {
-    userEmail: string;
     invites: Invitation[];
 }
 
-export function InvitationListClient({ userEmail, invites }: InvitationListClientProps) {
+export function InvitationListClient({ invites }: InvitationListClientProps) {
     const [isAccepting, setIsAccepting] = useState<string | null>(null);
 
     const handleAccept = async (invite: Invitation): Promise<void> => {
